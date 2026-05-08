@@ -602,6 +602,17 @@ class AppHandler(SimpleHTTPRequestHandler):
             )
             return
 
+        if parsed.path == "/api/stats":
+            self.send_json(
+                {
+                    "institution_count": len(CATALOG["institutions"]),
+                    "journal_count": len(CATALOG["journals"]),
+                    "source_count": len(SOURCE_LINKS),
+                    "article_count": len(CATALOG["articles"]),
+                }
+            )
+            return
+
         if parsed.path == "/api/search":
             params = parse_qs(parsed.query)
             query = unquote(params.get("q", [""])[0]).strip()

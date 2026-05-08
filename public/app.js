@@ -167,14 +167,31 @@ function localizedTitle(article) {
 }
 
 async function loadCatalog() {
-  const response = await fetch("/api/catalog");
-  state.catalog = await response.json();
+  await loadStats();
 
-  $("#institution-count").textContent = state.catalog.institutions.length;
-  $("#journal-count").textContent = state.catalog.journals.length + (state.catalog.source_count || 0);
-  $("#article-count").textContent = state.catalog.article_count;
+  const response = await fetch("/api/catalog", { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(`Catalog request failed with ${response.status}`);
+  }
+  const catalog = await response.json();
+  state.catalog = {
+    metadata: catalog.metadata || {},
+    institutions: Array.isArray(catalog.institutions) ? catalog.institutions : [],
+    journals: Array.isArray(catalog.journals) ? catalog.journals : [],
+    subjects: Array.isArray(catalog.subjects) ? catalog.subjects : [],
+    source_count: Number(catalog.source_count || 0),
+    article_count: Number(catalog.article_count || 0)
+  };
+
+  updateStats({
+    institution_count: state.catalog.institutions.length,
+    journal_count: state.catalog.journals.length,
+    source_count: state.catalog.source_count,
+    article_count: state.catalog.article_count
+  });
 
   const subjectFilter = $("#subject-filter");
+  subjectFilter.querySelectorAll("option:not([value='all'])").forEach((option) => option.remove());
   state.catalog.subjects.forEach((subject) => {
     const option = document.createElement("option");
     option.value = subject;
@@ -182,6 +199,25 @@ async function loadCatalog() {
     subjectFilter.appendChild(option);
   });
   renderInstitutions();
+}
+
+async function loadStats() {
+  const response = await fetch("/api/stats", { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(`Stats request failed with ${response.status}`);
+  }
+  const stats = await response.json();
+  updateStats(stats);
+  return stats;
+}
+
+function updateStats(stats) {
+  const institutions = Number(stats.institution_count || 0);
+  const journals = Number(stats.journal_count || 0) + Number(stats.source_count || 0);
+  const articles = Number(stats.article_count || 0);
+  $("#institution-count").textContent = institutions.toLocaleString();
+  $("#journal-count").textContent = journals.toLocaleString();
+  $("#article-count").textContent = articles.toLocaleString();
 }
 
 function renderInstitutions() {
@@ -456,7 +492,20 @@ document.querySelectorAll(".language-switcher button").forEach((button) => {
   button.addEventListener("click", () => applyLanguage(button.dataset.lang));
 });
 
-loadCatalog().then(() => {
-  applyLanguage("en");
-  runSearch();
-});
+loadCatalog()
+  .catch((error) => {
+    console.error(error);
+    state.catalog = {
+      metadata: {},
+      institutions: [],
+      journals: [],
+      subjects: [],
+      source_count: 0,
+      article_count: 0
+    };
+    return loadStats().catch((statsError) => console.error(statsError));
+  })
+  .finally(() => {
+    applyLanguage("en");
+    runSearch();
+  });
