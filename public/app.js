@@ -207,7 +207,7 @@ function renderResults() {
     const card = node.querySelector(".result-card");
     const citation = article.citations[style] || article.citations.apa;
     const pdfLink = node.querySelector(".pdf-link");
-    const summary = article.summary || article.abstract;
+    const summary = article.display_summary || article.summary || article.abstract;
 
     node.querySelector(".result-meta").textContent = `${article.authors.join(", ")} · ${article.year} · ${t("score")} ${article.score}`;
     node.querySelector("h3").textContent = article.title;

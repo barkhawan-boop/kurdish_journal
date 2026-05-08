@@ -201,6 +201,24 @@ def pdf_search_url(article: dict[str, Any], journal: dict[str, Any]) -> str:
     return f"https://www.google.com/search?q={quote_plus(query)}"
 
 
+def article_summary(article: dict[str, Any], journal: dict[str, Any], institution: dict[str, Any]) -> str:
+    summary = " ".join((article.get("summary") or "").split())
+    abstract = " ".join((article.get("abstract") or "").split())
+    if len(summary) >= 140:
+        return summary
+
+    title = article.get("title", "This record")
+    year = article.get("year") or "n.d."
+    keywords = ", ".join(article.get("keywords", [])[:5])
+    parts = [
+        summary or abstract,
+        f"It is indexed under {journal.get('title', 'an academic journal')} at {institution.get('name_en', 'a Kurdistan Region institution')}.",
+        f"The record is useful for searches around {keywords}." if keywords else "",
+        f"Publication year: {year}. Verify the full article metadata and PDF from the journal source before formal citation.",
+    ]
+    return " ".join(part for part in parts if part)
+
+
 def enrich_article(article: dict[str, Any], score: int = 0, reasons: list[str] | None = None) -> dict[str, Any]:
     journal = JOURNALS.get(article["journal_id"], {})
     institution = INSTITUTIONS.get(journal.get("institution_id", ""), {})
@@ -209,6 +227,7 @@ def enrich_article(article: dict[str, Any], score: int = 0, reasons: list[str] |
     result["reasons"] = reasons or []
     result["journal"] = journal
     result["institution"] = institution
+    result["display_summary"] = article_summary(article, journal, institution)
     result["citations"] = {
         "apa": citation(article, journal, "apa"),
         "mla": citation(article, journal, "mla"),
@@ -275,6 +294,14 @@ def enrich_source(source: dict[str, Any], score: int = 0, reasons: list[str] | N
     result["kind"] = "source"
     result["score"] = score
     result["reasons"] = reasons or []
+    if len(result.get("summary", "")) < 120:
+        subjects = ", ".join(result.get("subjects", [])[:5])
+        result["summary"] = (
+            f"{result.get('summary', 'Northern/Kurdistan journal source.')} "
+            f"This source belongs to {result.get('institution', 'a Kurdistan Region institution')} "
+            f"and is relevant for {subjects or 'academic journal'} searches. "
+            "Use the official source link when available to verify issues, article metadata, and PDFs."
+        )
     return result
 
 
@@ -337,29 +364,33 @@ def paraphrase_text(text: str, tone: str = "academic") -> str:
     if not cleaned:
         return ""
 
-    replacements = {
-        "academic": [
-            ("This study", "This research"),
-            ("shows", "indicates"),
-            ("reviews", "examines"),
-            ("focuses on", "concentrates on"),
-            ("covers", "addresses"),
-            ("important", "significant"),
-            ("uses", "employs"),
-        ],
-        "simple": [
-            ("This research", "This study"),
-            ("indicates", "shows"),
-            ("examines", "looks at"),
-            ("concentrates on", "focuses on"),
-            ("addresses", "covers"),
-            ("significant", "important"),
-            ("employs", "uses"),
-        ],
-    }
+    replacements = [
+        (r"\bdemo\b", "sample"),
+        (r"\brecord\b", "entry"),
+        (r"\btesting\b", "evaluating"),
+        (r"\btechnology-related\b", "technology-focused"),
+        (r"\bsearches\b", "queries"),
+        (r"\bshows\b", "indicates"),
+        (r"\breviews\b", "examines"),
+        (r"\bfocuses on\b", "concentrates on"),
+        (r"\bcovers\b", "addresses"),
+        (r"\bimportant\b", "significant"),
+        (r"\buses\b", "employs"),
+    ]
     output = cleaned
-    for source, target in replacements.get(tone, replacements["academic"]):
-        output = output.replace(source, target)
+    for pattern, target in replacements:
+        output = re.sub(pattern, target, output, flags=re.IGNORECASE)
+
+    if tone == "simple":
+        output = re.sub(r"\bindicates\b", "shows", output, flags=re.IGNORECASE)
+        output = re.sub(r"\bexamines\b", "looks at", output, flags=re.IGNORECASE)
+        output = re.sub(r"\bconcentrates on\b", "focuses on", output, flags=re.IGNORECASE)
+        return output
+
+    if not output.lower().startswith(("this", "the", "a ", "an ")):
+        output = f"This academic note states that {output[0].lower() + output[1:] if len(output) > 1 else output.lower()}"
+    if output == cleaned:
+        output = f"In academic terms, {cleaned[0].lower() + cleaned[1:] if len(cleaned) > 1 else cleaned.lower()}"
     return output
 
 
