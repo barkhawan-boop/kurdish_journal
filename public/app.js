@@ -29,6 +29,7 @@ const translations = {
     noResults: "No matches yet. Try a broader keyword such as Zanco, Soran, Koya, medical, computer, education, law, or journal.",
     pdfUnavailable: "PDF unavailable",
     findPdf: "Find PDF",
+    articleLink: "Article link",
     copied: "Copied",
     copyCitation: "Copy citation",
     copySummary: "Copy summary",
@@ -67,6 +68,7 @@ const translations = {
     noResults: "هیچ ئەنجامێک نییە. وشەیەکی فراوانتر تاقی بکەرەوە وەک Zanco، Soran، Koya، medical، computer، education، law یان journal.",
     pdfUnavailable: "PDF بەردەست نییە",
     findPdf: "دۆزینەوەی PDF",
+    articleLink: "لینکی توێژینەوە",
     copied: "کۆپی کرا",
     copyCitation: "کۆپی کردنی سەرچاوە",
     copySummary: "کۆپی کردنی پوختە",
@@ -105,6 +107,7 @@ const translations = {
     noResults: "لا توجد نتائج. جرب كلمة أوسع مثل Zanco أو Soran أو Koya أو medical أو computer أو education أو law أو journal.",
     pdfUnavailable: "PDF غير متاح",
     findPdf: "البحث عن PDF",
+    articleLink: "رابط المقال",
     copied: "تم النسخ",
     copyCitation: "نسخ الاستشهاد",
     copySummary: "نسخ الملخص",
@@ -249,6 +252,10 @@ function renderResults() {
     if (article.pdf_url) {
       pdfLink.href = article.pdf_url;
       pdfLink.textContent = "PDF";
+    } else if (article.url) {
+      pdfLink.href = article.url;
+      pdfLink.classList.add("secondary-link");
+      pdfLink.textContent = t("articleLink");
     } else {
       pdfLink.href = article.pdf_search_url;
       pdfLink.classList.add("secondary-link");
