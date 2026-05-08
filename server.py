@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import cgi
 import html
 import io
 import json
@@ -13,6 +12,8 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qs, quote_plus, unquote, urlparse
+from email.parser import BytesParser
+from email.policy import default
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -438,6 +439,28 @@ def extract_pdf_text(pdf_bytes: bytes) -> str:
     return "\n".join(pages)
 
 
+def parse_multipart_form(body: bytes, content_type: str) -> tuple[dict[str, str], dict[str, bytes]]:
+    message = BytesParser(policy=default).parsebytes(
+        f"Content-Type: {content_type}\r\nMIME-Version: 1.0\r\n\r\n".encode("utf-8") + body
+    )
+    fields: dict[str, str] = {}
+    files: dict[str, bytes] = {}
+    for part in message.iter_parts():
+        disposition = part.get("Content-Disposition", "")
+        if "form-data" not in disposition:
+            continue
+        name = part.get_param("name", header="Content-Disposition")
+        filename = part.get_param("filename", header="Content-Disposition")
+        payload = part.get_payload(decode=True) or b""
+        if not name:
+            continue
+        if filename:
+            files[name] = payload
+        else:
+            fields[name] = payload.decode(part.get_content_charset() or "utf-8", errors="replace")
+    return fields, files
+
+
 class AppHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, directory=str(PUBLIC_DIR), **kwargs)
@@ -490,21 +513,15 @@ class AppHandler(SimpleHTTPRequestHandler):
     def do_POST(self) -> None:
         parsed = urlparse(self.path)
         if parsed.path == "/api/summarize-pdf":
-            form = cgi.FieldStorage(
-                fp=self.rfile,
-                headers=self.headers,
-                environ={
-                    "REQUEST_METHOD": "POST",
-                    "CONTENT_TYPE": self.headers.get("Content-Type", ""),
-                },
-            )
-            file_item = form["pdf"] if "pdf" in form else None
-            keyword = form.getfirst("keyword", "")
-            if not file_item or not getattr(file_item, "file", None):
+            length = int(self.headers.get("Content-Length", "0"))
+            content_type = self.headers.get("Content-Type", "")
+            fields, files = parse_multipart_form(self.rfile.read(length), content_type)
+            keyword = fields.get("keyword", "")
+            pdf_bytes = files.get("pdf", b"")
+            if not pdf_bytes:
                 self.send_json({"error": "No PDF uploaded."}, HTTPStatus.BAD_REQUEST)
                 return
             try:
-                pdf_bytes = file_item.file.read()
                 extracted = extract_pdf_text(pdf_bytes)
                 self.send_json(
                     {
