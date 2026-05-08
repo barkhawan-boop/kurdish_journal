@@ -328,6 +328,18 @@ textarea:focus {
   font-weight: 800;
 }
 
+.missing-link {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0 12px;
+  color: var(--muted);
+  background: #f1f1f1;
+  font-weight: 800;
+}
+
 .actions a.disabled {
   pointer-events: none;
   color: var(--muted);

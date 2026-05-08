@@ -28,7 +28,8 @@ const translations = {
     copySummary: "Copy summary",
     score: "score",
     sourceLink: "Source link",
-    openSource: "Open source"
+    openSource: "Open source",
+    linkNeedsVerification: "Link needs verification"
   },
   ku: {
     searchTitle: "گەڕان لە گۆڤارە زانستییەکانی هەرێمی کوردستان",
@@ -59,7 +60,8 @@ const translations = {
     copySummary: "کۆپی کردنی پوختە",
     score: "پلە",
     sourceLink: "لینکی سەرچاوە",
-    openSource: "کردنەوەی سەرچاوە"
+    openSource: "کردنەوەی سەرچاوە",
+    linkNeedsVerification: "لینک پێویستی بە پشتڕاستکردنەوە هەیە"
   },
   ar: {
     searchTitle: "البحث في مجلات إقليم كردستان",
@@ -90,7 +92,8 @@ const translations = {
     copySummary: "نسخ الملخص",
     score: "درجة",
     sourceLink: "رابط المصدر",
-    openSource: "فتح المصدر"
+    openSource: "فتح المصدر",
+    linkNeedsVerification: "الرابط يحتاج إلى تحقق"
   }
 };
 
@@ -273,12 +276,19 @@ function renderSourceResult(source) {
 
   const actions = document.createElement("div");
   actions.className = "actions";
-  const link = document.createElement("a");
-  link.href = source.url;
-  link.target = "_blank";
-  link.rel = "noreferrer";
-  link.textContent = t("openSource");
-  actions.appendChild(link);
+  if (source.url) {
+    const link = document.createElement("a");
+    link.href = source.url;
+    link.target = "_blank";
+    link.rel = "noreferrer";
+    link.textContent = t("openSource");
+    actions.appendChild(link);
+  } else {
+    const missing = document.createElement("span");
+    missing.className = "missing-link";
+    missing.textContent = t("linkNeedsVerification");
+    actions.appendChild(missing);
+  }
 
   main.append(meta, title, summary, tags, actions);
 
@@ -295,7 +305,7 @@ function renderSourceResult(source) {
   const urlLabel = document.createElement("dt");
   const urlValue = document.createElement("dd");
   urlLabel.textContent = "URL";
-  urlValue.textContent = source.url;
+  urlValue.textContent = source.url || t("linkNeedsVerification");
   urlBlock.append(urlLabel, urlValue);
   metrics.append(institutionBlock, urlBlock);
 

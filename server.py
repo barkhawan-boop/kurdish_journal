@@ -294,44 +294,13 @@ def search_sources(query: str, subject: str = "all") -> list[dict[str, Any]]:
     return [enrich_source(hit.source, hit.score, hit.reasons) for hit in hits]
 
 
-def external_search_cards(query: str) -> list[dict[str, Any]]:
-    if not query.strip():
-        return []
-
-    encoded = quote_plus(query.strip())
-    return [
-        {
-            "kind": "source",
-            "id": "live-iasj-search",
-            "title": f'Search IASJ for "{query.strip()}"',
-            "url": "https://iasj.rdd.edu.iq/journals/",
-            "institution": "Iraqi Academic Scientific Journals",
-            "subjects": ["live search", "iasj", "articles"],
-            "summary": "IASJ has its own large article index. Open this source and run the keyword there until records are imported into this app.",
-            "score": 999,
-            "reasons": ["live external search source"],
-        },
-        {
-            "kind": "source",
-            "id": "google-iasj-site-search",
-            "title": f'Google search inside IASJ for "{query.strip()}"',
-            "url": f"https://www.google.com/search?q=site%3Aiasj.rdd.edu.iq%2Fjournals+{encoded}",
-            "institution": "Google site search",
-            "subjects": ["live search", "iasj", "articles"],
-            "summary": "Search indexed IASJ pages through Google when direct IASJ article data is not yet imported locally.",
-            "score": 998,
-            "reasons": ["external site search"],
-        },
-    ]
-
-
 def search_all(query: str, institution_type: str = "all", subject: str = "all") -> list[dict[str, Any]]:
     article_results = search_articles(query, institution_type, subject)
     for article in article_results:
         article["kind"] = "article"
     source_results = search_sources(query, subject)
     return sorted(
-        external_search_cards(query) + article_results + source_results,
+        article_results + source_results,
         key=lambda item: item.get("score", 0),
         reverse=True,
     )
