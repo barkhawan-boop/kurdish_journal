@@ -60,6 +60,30 @@ Example:
 python import_articles.py articles.csv
 ```
 
+## Harvest OJS Article Metadata
+
+Most Kurdistan Region journal sites run OJS. Many OJS journals expose article metadata through OAI-PMH. Use the harvester to import real article records into `data/catalog.json`:
+
+```powershell
+python harvest_ojs.py --dry-run --max-records-per-source 50
+```
+
+If the dry run finds records, import them:
+
+```powershell
+python harvest_ojs.py --max-records-per-source 500
+```
+
+Then commit and redeploy:
+
+```powershell
+git add data/catalog.json
+git commit -m "Import OJS article metadata"
+git push
+```
+
+Some journals may block automated access or may not expose OAI-PMH. For those, use CSV exports or manual metadata files with `import_articles.py`.
+
 ## Data Model
 
 Main data lives in `data/catalog.json`:
