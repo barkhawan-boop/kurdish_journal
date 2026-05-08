@@ -33,6 +33,7 @@ const translations = {
     copied: "Copied",
     copyCitation: "Copy citation",
     copySummary: "Copy summary",
+    summarizePdf: "Summarize PDF",
     score: "score",
     sourceLink: "Source link",
     openSource: "Open source",
@@ -72,6 +73,7 @@ const translations = {
     copied: "کۆپی کرا",
     copyCitation: "کۆپی کردنی سەرچاوە",
     copySummary: "کۆپی کردنی پوختە",
+    summarizePdf: "پوختەکردنی PDF",
     score: "پلە",
     sourceLink: "لینکی سەرچاوە",
     openSource: "کردنەوەی سەرچاوە",
@@ -111,6 +113,7 @@ const translations = {
     copied: "تم النسخ",
     copyCitation: "نسخ الاستشهاد",
     copySummary: "نسخ الملخص",
+    summarizePdf: "تلخيص PDF",
     score: "درجة",
     sourceLink: "رابط المصدر",
     openSource: "فتح المصدر",
@@ -240,7 +243,7 @@ function renderResults() {
     node.querySelector(".ranking").textContent = article.journal.ranking || "Not verified";
     node.querySelector(".citation").textContent = citation;
     node.querySelector(".copy-citation").textContent = t("copyCitation");
-    node.querySelector(".copy-summary").textContent = t("copySummary");
+    node.querySelector(".copy-summary").textContent = t("summarizePdf");
 
     const tags = node.querySelector(".tags");
     article.keywords.slice(0, 8).forEach((keyword) => {
@@ -265,12 +268,25 @@ function renderResults() {
     node.querySelector(".copy-citation").addEventListener("click", (event) => {
       copyText(citation, event.currentTarget);
     });
-    node.querySelector(".copy-summary").addEventListener("click", (event) => {
-      copyText(summary, event.currentTarget);
+    node.querySelector(".copy-summary").addEventListener("click", () => {
+      preparePdfSummary(article);
     });
 
     resultsEl.appendChild(card);
   });
+}
+
+function preparePdfSummary(article) {
+  const keywordInput = $("#pdf-keyword");
+  const output = $("#pdf-summary-output");
+  const tool = $("#pdf-summary-title");
+
+  keywordInput.value = article.title;
+  output.value = article.pdf_url
+    ? `Ready to summarize this PDF:\n${article.pdf_url}\n\nIf browser security prevents direct extraction, download the PDF and upload it here.`
+    : `No direct PDF URL is stored for this record.\n\nArticle page:\n${article.url || "No article link available"}\n\nOpen the article link, download the PDF if available, then upload it in this PDF summary tool.`;
+
+  tool.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function renderSourceResult(source) {
