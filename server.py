@@ -52,6 +52,10 @@ EXPANSIONS = {
     "education": {"خوێندن", "تعليم", "learning", "university", "زانکۆ"},
     "medical": {"medicine", "health", "پزیشکی", "صحة", "nursing"},
     "engineering": {"technology", "polytechnic", "ئەندازیاری", "هندسة"},
+    "electron": {"electronic", "electronics", "electrical", "engineering", "technology", "polytechnic"},
+    "electronic": {"electron", "electronics", "electrical", "engineering", "technology", "polytechnic"},
+    "electronics": {"electron", "electronic", "electrical", "engineering", "technology", "polytechnic"},
+    "electrical": {"electron", "electronic", "electronics", "engineering", "technology", "polytechnic"},
     "digital": {"e-learning", "online", "رقمنة", "دیجیتاڵ"},
     "computer": {"computing", "computer science", "software", "programming", "it", "ai", "artificial intelligence", "کۆمپیوتەر", "حاسوب"},
     "computers": {"computer", "computing", "software", "programming", "it"},
@@ -62,6 +66,20 @@ EXPANSIONS = {
     "sulaimani": {"slemani", "سلێمانی", "السليمانية"},
     "duhok": {"دهۆک", "دهوك", "badini"},
 }
+
+
+def fuzzy_token_matches(query_terms: set[str], indexed_tokens: set[str]) -> set[str]:
+    matches: set[str] = set()
+    for term in query_terms:
+        if len(term) < 4:
+            continue
+        for token in indexed_tokens:
+            if len(token) < 4:
+                continue
+            if token.startswith(term) or term.startswith(token):
+                matches.add(term)
+                break
+    return matches
 
 
 @dataclass(frozen=True)
@@ -226,6 +244,10 @@ def search_articles(query: str, institution_type: str = "all", subject: str = "a
             if overlap:
                 score += len(overlap) * 10
                 reasons.append("keyword match: " + ", ".join(sorted(overlap)[:5]))
+            fuzzy_matches = fuzzy_token_matches(query_terms, article_tokens)
+            if fuzzy_matches:
+                score += len(fuzzy_matches) * 8
+                reasons.append("related word match: " + ", ".join(sorted(fuzzy_matches)[:5]))
             title_text = f"{article.get('title', '')} {article.get('title_ku', '')} {article.get('title_ar', '')}".lower()
             title_matches = [term for term in query_terms if term in title_text]
             if title_matches:
@@ -277,6 +299,10 @@ def search_sources(query: str, subject: str = "all") -> list[dict[str, Any]]:
             if overlap:
                 score += len(overlap) * 10
                 reasons.append("source keyword match: " + ", ".join(sorted(overlap)[:5]))
+            fuzzy_matches = fuzzy_token_matches(query_terms, source_tokens)
+            if fuzzy_matches:
+                score += len(fuzzy_matches) * 8
+                reasons.append("source related word match: " + ", ".join(sorted(fuzzy_matches)[:5]))
             title_text = source.get("title", "").lower()
             title_matches = [term for term in query_terms if term in title_text]
             if title_matches:
