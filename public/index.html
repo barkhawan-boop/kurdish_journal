@@ -108,6 +108,22 @@
           </div>
         </div>
       </section>
+
+      <section class="tool-panel" aria-labelledby="pdf-summary-title">
+        <div>
+          <p class="eyebrow" data-i18n="pdfTool">PDF extraction</p>
+          <h2 id="pdf-summary-title" data-i18n="pdfSummaryTitle">Summarise a research PDF</h2>
+          <p data-i18n="pdfSummaryNote">Upload a readable PDF to extract text and create a focused academic summary.</p>
+        </div>
+        <div class="pdf-tool">
+          <div class="pdf-controls">
+            <input id="pdf-file" type="file" accept="application/pdf">
+            <input id="pdf-keyword" type="text" placeholder="Optional focus keyword">
+            <button id="pdf-summary-button" type="button" data-i18n="pdfSummaryButton">Summarise PDF</button>
+          </div>
+          <textarea id="pdf-summary-output" readonly placeholder="PDF summary"></textarea>
+        </div>
+      </section>
     </main>
 
     <template id="result-template">

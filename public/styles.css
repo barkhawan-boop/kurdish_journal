@@ -393,6 +393,28 @@ textarea:focus {
   gap: 14px;
 }
 
+.pdf-tool {
+  display: grid;
+  gap: 12px;
+}
+
+.pdf-controls {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(160px, 0.8fr) auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.pdf-controls button {
+  min-height: 42px;
+  border: 1px solid var(--brand);
+  border-radius: 6px;
+  background: var(--brand);
+  color: #fff;
+  padding: 0 16px;
+  font-weight: 700;
+}
+
 textarea {
   min-height: 190px;
   resize: vertical;
@@ -425,7 +447,8 @@ textarea {
   .tool-panel,
   .workspace,
   .result-card,
-  .paraphrase-grid {
+  .paraphrase-grid,
+  .pdf-controls {
     grid-template-columns: 1fr;
   }
 

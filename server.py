@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import argparse
+import cgi
 import html
+import io
 import json
 import os
 import re
@@ -394,6 +396,48 @@ def paraphrase_text(text: str, tone: str = "academic") -> str:
     return output
 
 
+def sentence_split(text: str) -> list[str]:
+    compact = re.sub(r"\s+", " ", text).strip()
+    return [sentence.strip() for sentence in re.split(r"(?<=[.!?؟])\s+", compact) if len(sentence.strip()) > 30]
+
+
+def summarize_text(text: str, keyword: str = "") -> str:
+    sentences = sentence_split(text)
+    if not sentences:
+        return "No readable academic text was found in this PDF. If the PDF is scanned images, OCR is required before summarising."
+
+    query_terms = set(tokens(keyword))
+    scored: list[tuple[int, int, str]] = []
+    for index, sentence in enumerate(sentences[:250]):
+        sentence_terms = set(tokens(sentence))
+        score = len(query_terms & sentence_terms) * 5 if query_terms else 0
+        score += 2 if any(term in sentence.lower() for term in ["result", "method", "study", "research", "conclusion", "aim", "objective"]) else 0
+        score += max(0, 4 - index // 8)
+        scored.append((score, index, sentence))
+
+    selected = sorted(scored, key=lambda item: (-item[0], item[1]))[:7]
+    selected = sorted(selected, key=lambda item: item[1])
+    body = " ".join(sentence for _, _, sentence in selected)
+
+    lead = "PDF summary: "
+    if keyword.strip():
+        lead = f'PDF summary focused on "{keyword.strip()}": '
+    return lead + body
+
+
+def extract_pdf_text(pdf_bytes: bytes) -> str:
+    try:
+        from pypdf import PdfReader
+    except ImportError as exc:
+        raise RuntimeError("PDF extraction requires pypdf. Run: pip install -r requirements.txt") from exc
+
+    reader = PdfReader(io.BytesIO(pdf_bytes))
+    pages: list[str] = []
+    for page in reader.pages[:40]:
+        pages.append(page.extract_text() or "")
+    return "\n".join(pages)
+
+
 class AppHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, directory=str(PUBLIC_DIR), **kwargs)
@@ -445,6 +489,34 @@ class AppHandler(SimpleHTTPRequestHandler):
 
     def do_POST(self) -> None:
         parsed = urlparse(self.path)
+        if parsed.path == "/api/summarize-pdf":
+            form = cgi.FieldStorage(
+                fp=self.rfile,
+                headers=self.headers,
+                environ={
+                    "REQUEST_METHOD": "POST",
+                    "CONTENT_TYPE": self.headers.get("Content-Type", ""),
+                },
+            )
+            file_item = form["pdf"] if "pdf" in form else None
+            keyword = form.getfirst("keyword", "")
+            if not file_item or not getattr(file_item, "file", None):
+                self.send_json({"error": "No PDF uploaded."}, HTTPStatus.BAD_REQUEST)
+                return
+            try:
+                pdf_bytes = file_item.file.read()
+                extracted = extract_pdf_text(pdf_bytes)
+                self.send_json(
+                    {
+                        "characters": len(extracted),
+                        "summary": summarize_text(extracted, keyword),
+                        "extracted_preview": extracted[:1200],
+                    }
+                )
+            except Exception as exc:
+                self.send_json({"error": str(exc)}, HTTPStatus.BAD_REQUEST)
+            return
+
         if parsed.path != "/api/paraphrase":
             self.send_error(HTTPStatus.NOT_FOUND)
             return

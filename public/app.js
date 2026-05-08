@@ -17,6 +17,12 @@ const translations = {
     assistantTools: "Research tools",
     paraphraseTitle: "Paraphrasing helper",
     paraphraseNote: "Use this for drafting support only. Keep citations and check the meaning before submission.",
+    pdfTool: "PDF extraction",
+    pdfSummaryTitle: "Summarise a research PDF",
+    pdfSummaryNote: "Upload a readable PDF to extract text and create a focused academic summary.",
+    pdfSummaryButton: "Summarise PDF",
+    choosePdf: "Choose a PDF first.",
+    summarising: "Extracting and summarising PDF...",
     academicTone: "Academic",
     simpleTone: "Simple",
     paraphraseButton: "Paraphrase",
@@ -49,6 +55,12 @@ const translations = {
     assistantTools: "ئامرازەکانی توێژەر",
     paraphraseTitle: "یارمەتیدەری داڕشتنەوە",
     paraphraseNote: "تەنها بۆ یارمەتی نووسین بەکاری بهێنە و سەرچاوەکان بپارێزە.",
+    pdfTool: "دەرهێنانی PDF",
+    pdfSummaryTitle: "پوختەکردنی PDFی توێژینەوە",
+    pdfSummaryNote: "PDFێکی خوێنراوە باربکە بۆ دەرهێنانی دەق و دروستکردنی پوختە.",
+    pdfSummaryButton: "پوختەکردنی PDF",
+    choosePdf: "سەرەتا PDF هەڵبژێرە.",
+    summarising: "دەرهێنان و پوختەکردنی PDF...",
     academicTone: "ئەکادیمی",
     simpleTone: "سادە",
     paraphraseButton: "داڕشتنەوە",
@@ -81,6 +93,12 @@ const translations = {
     assistantTools: "أدوات الباحث",
     paraphraseTitle: "مساعد إعادة الصياغة",
     paraphraseNote: "استخدمه للمساعدة في المسودة فقط وحافظ على الاستشهادات.",
+    pdfTool: "استخراج PDF",
+    pdfSummaryTitle: "تلخيص ملف بحث PDF",
+    pdfSummaryNote: "ارفع ملف PDF قابل للقراءة لاستخراج النص وإنشاء ملخص أكاديمي.",
+    pdfSummaryButton: "تلخيص PDF",
+    choosePdf: "اختر ملف PDF أولاً.",
+    summarising: "جاري استخراج وتلخيص PDF...",
     academicTone: "أكاديمي",
     simpleTone: "بسيط",
     paraphraseButton: "إعادة الصياغة",
@@ -334,6 +352,31 @@ async function paraphrase() {
   $("#paraphrase-output").value = payload.paraphrased;
 }
 
+async function summarizePdf() {
+  const fileInput = $("#pdf-file");
+  const output = $("#pdf-summary-output");
+  if (!fileInput.files.length) {
+    output.value = t("choosePdf");
+    return;
+  }
+
+  output.value = t("summarising");
+  const formData = new FormData();
+  formData.append("pdf", fileInput.files[0]);
+  formData.append("keyword", $("#pdf-keyword").value.trim());
+
+  const response = await fetch("/api/summarize-pdf", {
+    method: "POST",
+    body: formData
+  });
+  const payload = await response.json();
+  if (!response.ok) {
+    output.value = payload.error || "PDF summarisation failed.";
+    return;
+  }
+  output.value = `${payload.summary}\n\nExtracted text preview:\n${payload.extracted_preview}`;
+}
+
 $("#search-form").addEventListener("submit", (event) => {
   event.preventDefault();
   runSearch();
@@ -342,6 +385,7 @@ $("#type-filter").addEventListener("change", runSearch);
 $("#subject-filter").addEventListener("change", runSearch);
 $("#citation-style").addEventListener("change", renderResults);
 $("#paraphrase-button").addEventListener("click", paraphrase);
+$("#pdf-summary-button").addEventListener("click", summarizePdf);
 
 document.querySelectorAll(".language-switcher button").forEach((button) => {
   button.addEventListener("click", () => applyLanguage(button.dataset.lang));
