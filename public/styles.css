@@ -400,7 +400,7 @@ textarea:focus {
 
 .pdf-controls {
   display: grid;
-  grid-template-columns: minmax(180px, 1fr) minmax(160px, 0.8fr) auto;
+  grid-template-columns: minmax(180px, 1fr) minmax(160px, 0.8fr) auto auto;
   gap: 10px;
   align-items: center;
 }

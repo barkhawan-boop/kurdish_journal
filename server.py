@@ -6,6 +6,7 @@ import io
 import json
 import os
 import re
+import textwrap
 from dataclasses import dataclass
 from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -475,6 +476,32 @@ def summarize_text(text: str, keyword: str = "") -> str:
     return lead + body
 
 
+def metadata_summary(article: dict[str, Any]) -> str:
+    title = article.get("title", "Untitled")
+    authors = ", ".join(article.get("authors", [])) or "Unknown author"
+    year = article.get("year") or "n.d."
+    journal = article.get("journal", {}).get("title", "Unknown journal")
+    institution = article.get("institution", {}).get("name_en", "Unknown institution")
+    abstract = article.get("abstract") or article.get("summary") or article.get("display_summary") or ""
+    keywords = ", ".join(article.get("keywords", [])[:8])
+    article_url = article.get("url") or "No article link available"
+    pdf_url = article.get("pdf_url") or "No direct PDF URL available"
+
+    core = summarize_text(abstract, title) if abstract else "No abstract text is available for this record."
+    return (
+        f"Article summary based on indexed metadata\n\n"
+        f"Title: {title}\n"
+        f"Authors: {authors}\n"
+        f"Year: {year}\n"
+        f"Journal: {journal}\n"
+        f"Institution: {institution}\n"
+        f"Keywords: {keywords}\n"
+        f"Article link: {article_url}\n"
+        f"PDF link: {pdf_url}\n\n"
+        f"{core}"
+    )
+
+
 def extract_pdf_text(pdf_bytes: bytes) -> str:
     try:
         from pypdf import PdfReader
@@ -486,6 +513,37 @@ def extract_pdf_text(pdf_bytes: bytes) -> str:
     for page in reader.pages[:40]:
         pages.append(page.extract_text() or "")
     return "\n".join(pages)
+
+
+def summary_pdf_bytes(text: str) -> bytes:
+    try:
+        from reportlab.lib.pagesizes import A4
+        from reportlab.lib.units import cm
+        from reportlab.pdfgen import canvas
+    except ImportError as exc:
+        raise RuntimeError("PDF export requires reportlab. Run: pip install reportlab") from exc
+
+    buffer = io.BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=A4)
+    width, height = A4
+    x = 1.6 * cm
+    y = height - 1.6 * cm
+    pdf.setFont("Helvetica-Bold", 14)
+    pdf.drawString(x, y, "Research Summary")
+    y -= 0.8 * cm
+    pdf.setFont("Helvetica", 10)
+    for paragraph in text.splitlines():
+        lines = textwrap.wrap(paragraph, width=95) or [""]
+        for line in lines:
+            if y < 1.6 * cm:
+                pdf.showPage()
+                pdf.setFont("Helvetica", 10)
+                y = height - 1.6 * cm
+            pdf.drawString(x, y, line)
+            y -= 0.45 * cm
+        y -= 0.15 * cm
+    pdf.save()
+    return buffer.getvalue()
 
 
 def parse_multipart_form(body: bytes, content_type: str) -> tuple[dict[str, str], dict[str, bytes]]:
@@ -579,6 +637,31 @@ class AppHandler(SimpleHTTPRequestHandler):
                         "extracted_preview": extracted[:1200],
                     }
                 )
+            except Exception as exc:
+                self.send_json({"error": str(exc)}, HTTPStatus.BAD_REQUEST)
+            return
+
+        if parsed.path == "/api/summarize-article":
+            length = int(self.headers.get("Content-Length", "0"))
+            payload = json.loads(self.rfile.read(length).decode("utf-8") or "{}")
+            self.send_json({"summary": metadata_summary(payload)})
+            return
+
+        if parsed.path == "/api/export-summary-pdf":
+            length = int(self.headers.get("Content-Length", "0"))
+            payload = json.loads(self.rfile.read(length).decode("utf-8") or "{}")
+            text = str(payload.get("text", "")).strip()
+            if not text:
+                self.send_json({"error": "No summary text provided."}, HTTPStatus.BAD_REQUEST)
+                return
+            try:
+                body = summary_pdf_bytes(text)
+                self.send_response(HTTPStatus.OK)
+                self.send_header("Content-Type", "application/pdf")
+                self.send_header("Content-Disposition", 'attachment; filename="research-summary.pdf"')
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
             except Exception as exc:
                 self.send_json({"error": str(exc)}, HTTPStatus.BAD_REQUEST)
             return

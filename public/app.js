@@ -21,6 +21,7 @@ const translations = {
     pdfSummaryTitle: "Summarise a research PDF",
     pdfSummaryNote: "Upload a readable PDF to extract text and create a focused academic summary.",
     pdfSummaryButton: "Summarise PDF",
+    exportSummaryButton: "Export PDF",
     choosePdf: "Choose a PDF first.",
     summarising: "Extracting and summarising PDF...",
     academicTone: "Academic",
@@ -61,6 +62,7 @@ const translations = {
     pdfSummaryTitle: "پوختەکردنی PDFی توێژینەوە",
     pdfSummaryNote: "PDFێکی خوێنراوە باربکە بۆ دەرهێنانی دەق و دروستکردنی پوختە.",
     pdfSummaryButton: "پوختەکردنی PDF",
+    exportSummaryButton: "هەناردەی PDF",
     choosePdf: "سەرەتا PDF هەڵبژێرە.",
     summarising: "دەرهێنان و پوختەکردنی PDF...",
     academicTone: "ئەکادیمی",
@@ -101,6 +103,7 @@ const translations = {
     pdfSummaryTitle: "تلخيص ملف بحث PDF",
     pdfSummaryNote: "ارفع ملف PDF قابل للقراءة لاستخراج النص وإنشاء ملخص أكاديمي.",
     pdfSummaryButton: "تلخيص PDF",
+    exportSummaryButton: "تصدير PDF",
     choosePdf: "اختر ملف PDF أولاً.",
     summarising: "جاري استخراج وتلخيص PDF...",
     academicTone: "أكاديمي",
@@ -124,7 +127,8 @@ const translations = {
 const state = {
   lang: "en",
   catalog: null,
-  results: []
+  results: [],
+  selectedArticle: null
 };
 
 const $ = (selector) => document.querySelector(selector);
@@ -277,14 +281,13 @@ function renderResults() {
 }
 
 function preparePdfSummary(article) {
+  state.selectedArticle = article;
   const keywordInput = $("#pdf-keyword");
   const output = $("#pdf-summary-output");
   const tool = $("#pdf-summary-title");
 
   keywordInput.value = article.title;
-  output.value = article.pdf_url
-    ? `Ready to summarize this PDF:\n${article.pdf_url}\n\nIf browser security prevents direct extraction, download the PDF and upload it here.`
-    : `No direct PDF URL is stored for this record.\n\nArticle page:\n${article.url || "No article link available"}\n\nOpen the article link, download the PDF if available, then upload it in this PDF summary tool.`;
+  output.value = "Ready. Click Summarise PDF to create a summary from the uploaded PDF or from this article metadata.";
 
   tool.scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -379,6 +382,17 @@ async function summarizePdf() {
   const fileInput = $("#pdf-file");
   const output = $("#pdf-summary-output");
   if (!fileInput.files.length) {
+    if (state.selectedArticle) {
+      output.value = t("summarising");
+      const response = await fetch("/api/summarize-article", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(state.selectedArticle)
+      });
+      const payload = await response.json();
+      output.value = payload.summary || payload.error || "Article summary failed.";
+      return;
+    }
     output.value = t("choosePdf");
     return;
   }
@@ -400,6 +414,33 @@ async function summarizePdf() {
   output.value = `${payload.summary}\n\nExtracted text preview:\n${payload.extracted_preview}`;
 }
 
+async function exportSummaryPdf() {
+  const text = $("#pdf-summary-output").value.trim();
+  if (!text) {
+    $("#pdf-summary-output").value = "Create a summary first, then export it.";
+    return;
+  }
+  const response = await fetch("/api/export-summary-pdf", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text })
+  });
+  if (!response.ok) {
+    const payload = await response.json();
+    $("#pdf-summary-output").value = payload.error || "Export failed.";
+    return;
+  }
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "research-summary.pdf";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
 $("#search-form").addEventListener("submit", (event) => {
   event.preventDefault();
   runSearch();
@@ -409,6 +450,7 @@ $("#subject-filter").addEventListener("change", runSearch);
 $("#citation-style").addEventListener("change", renderResults);
 $("#paraphrase-button").addEventListener("click", paraphrase);
 $("#pdf-summary-button").addEventListener("click", summarizePdf);
+$("#export-summary-button").addEventListener("click", exportSummaryPdf);
 
 document.querySelectorAll(".language-switcher button").forEach((button) => {
   button.addEventListener("click", () => applyLanguage(button.dataset.lang));
