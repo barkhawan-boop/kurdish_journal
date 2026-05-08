@@ -22,6 +22,7 @@ const translations = {
     paraphraseButton: "Paraphrase",
     noResults: "No matches yet. Try a broader keyword such as Zanco, Soran, Koya, medical, computer, education, law, or journal.",
     pdfUnavailable: "PDF unavailable",
+    findPdf: "Find PDF",
     copied: "Copied",
     copyCitation: "Copy citation",
     copySummary: "Copy summary",
@@ -52,6 +53,7 @@ const translations = {
     paraphraseButton: "داڕشتنەوە",
     noResults: "هیچ ئەنجامێک نییە. وشەیەکی فراوانتر تاقی بکەرەوە وەک Zanco، Soran، Koya، medical، computer، education، law یان journal.",
     pdfUnavailable: "PDF بەردەست نییە",
+    findPdf: "دۆزینەوەی PDF",
     copied: "کۆپی کرا",
     copyCitation: "کۆپی کردنی سەرچاوە",
     copySummary: "کۆپی کردنی پوختە",
@@ -82,6 +84,7 @@ const translations = {
     paraphraseButton: "إعادة الصياغة",
     noResults: "لا توجد نتائج. جرب كلمة أوسع مثل Zanco أو Soran أو Koya أو medical أو computer أو education أو law أو journal.",
     pdfUnavailable: "PDF غير متاح",
+    findPdf: "البحث عن PDF",
     copied: "تم النسخ",
     copyCitation: "نسخ الاستشهاد",
     copySummary: "نسخ الملخص",
@@ -226,9 +229,9 @@ function renderResults() {
       pdfLink.href = article.pdf_url;
       pdfLink.textContent = "PDF";
     } else {
-      pdfLink.removeAttribute("href");
-      pdfLink.classList.add("disabled");
-      pdfLink.textContent = t("pdfUnavailable");
+      pdfLink.href = article.pdf_search_url;
+      pdfLink.classList.add("secondary-link");
+      pdfLink.textContent = t("findPdf");
     }
 
     node.querySelector(".copy-citation").addEventListener("click", (event) => {

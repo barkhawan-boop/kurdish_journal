@@ -175,6 +175,14 @@ def citation(article: dict[str, Any], journal: dict[str, Any], style: str = "apa
     return f"{author_text}. ({year}). {title}. {journal_title}.{tail}"
 
 
+def pdf_search_url(article: dict[str, Any], journal: dict[str, Any]) -> str:
+    title = article.get("title", "")
+    journal_title = journal.get("title", "")
+    doi = article.get("doi", "")
+    query = " ".join(part for part in [title, journal_title, doi, "PDF"] if part)
+    return f"https://www.google.com/search?q={quote_plus(query)}"
+
+
 def enrich_article(article: dict[str, Any], score: int = 0, reasons: list[str] | None = None) -> dict[str, Any]:
     journal = JOURNALS.get(article["journal_id"], {})
     institution = INSTITUTIONS.get(journal.get("institution_id", ""), {})
@@ -189,6 +197,7 @@ def enrich_article(article: dict[str, Any], score: int = 0, reasons: list[str] |
         "chicago": citation(article, journal, "chicago"),
         "bibtex": citation(article, journal, "bibtex"),
     }
+    result["pdf_search_url"] = pdf_search_url(article, journal)
     return result
 
 
