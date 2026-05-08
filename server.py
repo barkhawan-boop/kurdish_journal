@@ -365,36 +365,85 @@ def search_all(query: str, institution_type: str = "all", subject: str = "all") 
 def paraphrase_text(text: str, tone: str = "academic") -> str:
     cleaned = " ".join(text.split())
     if not cleaned:
-        return ""
+        return "Paste a paragraph first, then click Paraphrase."
 
-    replacements = [
+    academic_replacements = [
         (r"\bdemo\b", "sample"),
         (r"\brecord\b", "entry"),
         (r"\btesting\b", "evaluating"),
         (r"\btechnology-related\b", "technology-focused"),
         (r"\bsearches\b", "queries"),
-        (r"\bshows\b", "indicates"),
-        (r"\breviews\b", "examines"),
-        (r"\bfocuses on\b", "concentrates on"),
+        (r"\bstudy\b", "research"),
+        (r"\bpaper\b", "article"),
+        (r"\bshows\b", "demonstrates"),
+        (r"\bfound\b", "identified"),
+        (r"\bfinds\b", "identifies"),
+        (r"\breviews\b", "critically examines"),
+        (r"\bfocuses on\b", "centres on"),
         (r"\bcovers\b", "addresses"),
         (r"\bimportant\b", "significant"),
+        (r"\bbig\b", "substantial"),
+        (r"\bsmall\b", "limited"),
         (r"\buses\b", "employs"),
+        (r"\bhelps\b", "contributes to"),
+        (r"\babout\b", "concerning"),
+        (r"\bbecause\b", "because of the fact that"),
+        (r"\bpeople\b", "individuals"),
+        (r"\bstudents\b", "learners"),
+        (r"\bteachers\b", "educators"),
+        (r"\bresults\b", "findings"),
+        (r"\bproblem\b", "issue"),
+        (r"\bproblems\b", "issues"),
     ]
-    output = cleaned
-    for pattern, target in replacements:
-        output = re.sub(pattern, target, output, flags=re.IGNORECASE)
+    simple_replacements = [
+        (r"\bdemonstrates\b", "shows"),
+        (r"\bidentified\b", "found"),
+        (r"\bcritically examines\b", "looks at"),
+        (r"\bcentres on\b", "focuses on"),
+        (r"\baddresses\b", "covers"),
+        (r"\bsignificant\b", "important"),
+        (r"\bsubstantial\b", "large"),
+        (r"\bemploys\b", "uses"),
+        (r"\bindividuals\b", "people"),
+        (r"\blearners\b", "students"),
+        (r"\beducators\b", "teachers"),
+        (r"\bfindings\b", "results"),
+    ]
 
-    if tone == "simple":
-        output = re.sub(r"\bindicates\b", "shows", output, flags=re.IGNORECASE)
-        output = re.sub(r"\bexamines\b", "looks at", output, flags=re.IGNORECASE)
-        output = re.sub(r"\bconcentrates on\b", "focuses on", output, flags=re.IGNORECASE)
-        return output
+    replacements = simple_replacements if tone == "simple" else academic_replacements
+    sentences = sentence_split(cleaned) or [cleaned]
+    paraphrased: list[str] = []
 
-    if not output.lower().startswith(("this", "the", "a ", "an ")):
-        output = f"This academic note states that {output[0].lower() + output[1:] if len(output) > 1 else output.lower()}"
-    if output == cleaned:
-        output = f"In academic terms, {cleaned[0].lower() + cleaned[1:] if len(cleaned) > 1 else cleaned.lower()}"
-    return output
+    for sentence in sentences:
+        output = sentence
+        for pattern, target in replacements:
+            output = re.sub(pattern, target, output, flags=re.IGNORECASE)
+
+        if tone == "academic":
+            output = re.sub(
+                r"^This research (demonstrates|identifies|addresses|examines)",
+                r"The present research \1",
+                output,
+                flags=re.IGNORECASE,
+            )
+            output = re.sub(
+                r"^This article (demonstrates|identifies|addresses|examines)",
+                r"This article \1",
+                output,
+                flags=re.IGNORECASE,
+            )
+        paraphrased.append(output)
+
+    final = " ".join(paraphrased)
+    if tone == "academic":
+        if final == cleaned:
+            final = f"From an academic perspective, {cleaned[0].lower() + cleaned[1:] if len(cleaned) > 1 else cleaned.lower()}"
+        if not re.search(r"\b(research|article|findings|analysis|evidence|study)\b", final, re.IGNORECASE):
+            final = f"This academic revision indicates that {final[0].lower() + final[1:] if len(final) > 1 else final.lower()}"
+    else:
+        final = re.sub(r"\bbecause of the fact that\b", "because", final, flags=re.IGNORECASE)
+
+    return final
 
 
 def sentence_split(text: str) -> list[str]:
