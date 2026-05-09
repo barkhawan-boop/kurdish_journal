@@ -531,6 +531,7 @@ def summary_pdf_bytes(text: str) -> bytes:
     pdf = canvas.Canvas(buffer, pagesize=A4)
     width, height = A4
     x = 1.6 * cm
+    right_x = width - x
     y = height - 1.6 * cm
     pdf.setFont(bold_font, 14)
     pdf.drawString(x, y, "Research Summary")
@@ -543,15 +544,27 @@ def summary_pdf_bytes(text: str) -> bytes:
                 pdf.showPage()
                 pdf.setFont(regular_font, 10)
                 y = height - 1.6 * cm
-            pdf.drawString(x, y, pdf_display_text(line))
+            draw_pdf_line(pdf, line, x, right_x, y)
             y -= 0.45 * cm
         y -= 0.15 * cm
     pdf.save()
     return buffer.getvalue()
 
 
+def has_arabic_script(text: str) -> bool:
+    return bool(re.search(r"[\u0600-\u06FF]", text))
+
+
+def draw_pdf_line(pdf: Any, line: str, x: float, right_x: float, y: float) -> None:
+    display = pdf_display_text(line)
+    if has_arabic_script(line):
+        pdf.drawRightString(right_x, y, display)
+    else:
+        pdf.drawString(x, y, display)
+
+
 def pdf_display_text(text: str) -> str:
-    if not re.search(r"[\u0600-\u06FF]", text):
+    if not has_arabic_script(text):
         return text
     try:
         import arabic_reshaper
