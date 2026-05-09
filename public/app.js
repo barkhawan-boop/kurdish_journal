@@ -12,7 +12,11 @@ const translations = {
     institutions: "Institutions",
     journals: "Journals",
     seedArticles: "Indexed Articles",
-    catalogTitle: "Recognised universities",
+    catalogTitle: "Latest published articles",
+    refreshArticles: "Update latest articles",
+    refreshingArticles: "Checking journal servers for new articles...",
+    refreshComplete: "Update complete.",
+    refreshFailed: "Update failed. Try again later.",
     resultsTitle: "Results",
     assistantTools: "Research tools",
     paraphraseTitle: "Paraphrasing helper",
@@ -53,7 +57,11 @@ const translations = {
     institutions: "دامەزراوەکان",
     journals: "گۆڤارەکان",
     seedArticles: "تۆمارە ئیندێکسکراوەکان",
-    catalogTitle: "زانکۆ ناسراوەکان",
+    catalogTitle: "توێژینەوە بڵاوکراوە نوێیەکان",
+    refreshArticles: "نوێکردنەوەی توێژینەوەکان",
+    refreshingArticles: "پشکنینی سێرڤەری گۆڤارەکان بۆ تۆماری نوێ...",
+    refreshComplete: "نوێکردنەوە تەواو بوو.",
+    refreshFailed: "نوێکردنەوە سەرکەوتوو نەبوو.",
     resultsTitle: "ئەنجامەکان",
     assistantTools: "ئامرازەکانی توێژەر",
     paraphraseTitle: "یارمەتیدەری داڕشتنەوە",
@@ -94,7 +102,11 @@ const translations = {
     institutions: "المؤسسات",
     journals: "المجلات",
     seedArticles: "مقالات مفهرسة",
-    catalogTitle: "الجامعات المعترف بها",
+    catalogTitle: "أحدث المقالات المنشورة",
+    refreshArticles: "تحديث أحدث المقالات",
+    refreshingArticles: "جاري فحص خوادم المجلات...",
+    refreshComplete: "اكتمل التحديث.",
+    refreshFailed: "فشل التحديث. حاول لاحقاً.",
     resultsTitle: "النتائج",
     assistantTools: "أدوات الباحث",
     paraphraseTitle: "مساعد إعادة الصياغة",
@@ -128,6 +140,7 @@ const state = {
   lang: "en",
   catalog: null,
   results: [],
+  latest: [],
   selectedArticle: null
 };
 
@@ -149,7 +162,7 @@ function applyLanguage(lang) {
   document.querySelectorAll(".language-switcher button").forEach((button) => {
     button.classList.toggle("active", button.dataset.lang === lang);
   });
-  renderInstitutions();
+  renderLatestArticles();
   renderResults();
 }
 
@@ -198,7 +211,7 @@ async function loadCatalog() {
     option.textContent = subject;
     subjectFilter.appendChild(option);
   });
-  renderInstitutions();
+  await loadLatestArticles();
 }
 
 async function loadStats() {
@@ -220,20 +233,58 @@ function updateStats(stats) {
   $("#article-count").textContent = articles.toLocaleString();
 }
 
-function renderInstitutions() {
-  if (!state.catalog) return;
-  const list = $("#institution-list");
+async function loadLatestArticles() {
+  const response = await fetch("/api/latest?limit=12", { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(`Latest articles request failed with ${response.status}`);
+  }
+  const payload = await response.json();
+  state.latest = Array.isArray(payload.results) ? payload.results : [];
+  renderLatestArticles();
+}
+
+function renderLatestArticles() {
+  const list = $("#latest-articles");
+  if (!list) return;
   list.innerHTML = "";
-  state.catalog.institutions.forEach((institution) => {
-    const item = document.createElement("div");
-    item.className = "institution-item";
-    const name = document.createElement("strong");
+  state.latest.forEach((article) => {
+    const item = document.createElement("button");
+    item.className = "latest-article";
+    item.type = "button";
+    const title = document.createElement("strong");
     const meta = document.createElement("span");
-    name.textContent = localizedInstitution(institution);
-    meta.textContent = `${institution.city} · ${t(institution.type)}`;
-    item.append(name, meta);
+    title.textContent = localizedTitle(article);
+    meta.textContent = `${article.year || "n.d."} · ${article.journal?.title || "Journal"}`;
+    item.append(title, meta);
+    item.addEventListener("click", () => {
+      $("#query").value = article.title;
+      runSearch();
+      document.querySelector(".results-panel")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
     list.appendChild(item);
   });
+}
+
+async function refreshArticles() {
+  const button = $("#refresh-articles-button");
+  const status = $("#refresh-status");
+  button.disabled = true;
+  status.textContent = t("refreshingArticles");
+  try {
+    const response = await fetch("/api/refresh-articles", { method: "POST" });
+    const payload = await response.json();
+    if (!response.ok) {
+      throw new Error(payload.error || "Refresh failed");
+    }
+    status.textContent = `${t("refreshComplete")} ${payload.imported} new articles.`;
+    await loadCatalog();
+    await runSearch();
+  } catch (error) {
+    console.error(error);
+    status.textContent = t("refreshFailed");
+  } finally {
+    button.disabled = false;
+  }
 }
 
 async function runSearch() {
@@ -487,6 +538,7 @@ $("#citation-style").addEventListener("change", renderResults);
 $("#paraphrase-button").addEventListener("click", paraphrase);
 $("#pdf-summary-button").addEventListener("click", summarizePdf);
 $("#export-summary-button").addEventListener("click", exportSummaryPdf);
+$("#refresh-articles-button").addEventListener("click", refreshArticles);
 
 document.querySelectorAll(".language-switcher button").forEach((button) => {
   button.addEventListener("click", () => applyLanguage(button.dataset.lang));

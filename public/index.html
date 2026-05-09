@@ -67,8 +67,12 @@
 
       <section class="workspace">
         <aside class="catalog-panel" aria-labelledby="catalog-title">
-          <h2 id="catalog-title" data-i18n="catalogTitle">Recognised universities</h2>
-          <div id="institution-list" class="institution-list"></div>
+          <div class="latest-heading">
+            <h2 id="catalog-title" data-i18n="catalogTitle">Latest published articles</h2>
+            <button id="refresh-articles-button" type="button" data-i18n="refreshArticles">Update latest articles</button>
+          </div>
+          <p id="refresh-status" class="refresh-status" aria-live="polite"></p>
+          <div id="latest-articles" class="latest-articles"></div>
         </aside>
 
         <section class="results-panel" aria-live="polite">

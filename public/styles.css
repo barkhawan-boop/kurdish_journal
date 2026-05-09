@@ -220,7 +220,33 @@ textarea:focus {
   padding: 20px;
 }
 
-.institution-list {
+.latest-heading {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.latest-heading h2 {
+  margin: 0;
+}
+
+.latest-heading button {
+  min-height: 40px;
+  border: 1px solid var(--brand);
+  border-radius: 6px;
+  background: var(--brand);
+  color: #fff;
+  font-weight: 800;
+}
+
+.refresh-status {
+  min-height: 22px;
+  margin-bottom: 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.latest-articles {
   display: grid;
   gap: 8px;
   max-height: 620px;
@@ -228,17 +254,24 @@ textarea:focus {
   padding-inline-end: 4px;
 }
 
-.institution-item {
+.latest-article {
+  width: 100%;
+  text-align: start;
   padding: 10px;
+  border: 0;
   border-radius: 6px;
   background: var(--soft);
+  color: var(--ink);
 }
 
-.institution-item strong {
+.latest-article strong {
   display: block;
+  line-height: 1.35;
 }
 
-.institution-item span {
+.latest-article span {
+  display: block;
+  margin-top: 4px;
   color: var(--muted);
   font-size: 13px;
 }

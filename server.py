@@ -115,6 +115,14 @@ INSTITUTIONS = {item["id"]: item for item in CATALOG["institutions"]}
 JOURNALS = {item["id"]: item for item in CATALOG["journals"]}
 
 
+def reload_catalog_globals() -> None:
+    global CATALOG, SOURCE_LINKS, INSTITUTIONS, JOURNALS
+    CATALOG = load_catalog()
+    SOURCE_LINKS = load_source_links()
+    INSTITUTIONS = {item["id"]: item for item in CATALOG["institutions"]}
+    JOURNALS = {item["id"]: item for item in CATALOG["journals"]}
+
+
 def tokens(text: str) -> list[str]:
     raw_tokens = [match.group(0).lower() for match in SCRIPT_RE.finditer(text)]
     return [token for token in raw_tokens if token not in STOP_WORDS and len(token) > 1]
@@ -290,6 +298,12 @@ def search_articles(query: str, institution_type: str = "all", subject: str = "a
 
     hits.sort(key=lambda hit: (hit.score, hit.article.get("year", 0)), reverse=True)
     return [enrich_article(hit.article, hit.score, hit.reasons) for hit in hits]
+
+
+def latest_articles(limit: int = 12) -> list[dict[str, Any]]:
+    indexed = list(enumerate(CATALOG["articles"]))
+    indexed.sort(key=lambda item: (int(item[1].get("year") or 0), item[0]), reverse=True)
+    return [enrich_article(article, score=0, reasons=["latest indexed record"]) for _, article in indexed[:limit]]
 
 
 def enrich_source(source: dict[str, Any], score: int = 0, reasons: list[str] | None = None) -> dict[str, Any]:
@@ -680,6 +694,16 @@ class AppHandler(SimpleHTTPRequestHandler):
             self.send_json({"query": query, "count": len(results), "results": results})
             return
 
+        if parsed.path == "/api/latest":
+            params = parse_qs(parsed.query)
+            try:
+                limit = min(max(int(params.get("limit", ["12"])[0]), 1), 30)
+            except ValueError:
+                limit = 12
+            results = latest_articles(limit)
+            self.send_json({"count": len(results), "results": results})
+            return
+
         if parsed.path == "/api/health":
             self.send_json({"ok": True, "catalog_records": len(CATALOG["articles"]), "source_links": len(SOURCE_LINKS)})
             return
@@ -731,6 +755,25 @@ class AppHandler(SimpleHTTPRequestHandler):
                 self.send_header("Content-Length", str(len(body)))
                 self.end_headers()
                 self.wfile.write(body)
+            except Exception as exc:
+                self.send_json({"error": str(exc)}, HTTPStatus.BAD_REQUEST)
+            return
+
+        if parsed.path == "/api/refresh-articles":
+            try:
+                import harvest_ojs
+
+                imported, notes = harvest_ojs.harvest_all(max_records_per_source=100, dry_run=False)
+                reload_catalog_globals()
+                self.send_json(
+                    {
+                        "imported": imported,
+                        "article_count": len(CATALOG["articles"]),
+                        "journal_count": len(CATALOG["journals"]),
+                        "source_count": len(SOURCE_LINKS),
+                        "notes": notes[-20:],
+                    }
+                )
             except Exception as exc:
                 self.send_json({"error": str(exc)}, HTTPStatus.BAD_REQUEST)
             return
