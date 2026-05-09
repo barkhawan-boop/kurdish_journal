@@ -11,7 +11,8 @@ from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
-from urllib.parse import parse_qs, quote_plus, unquote, urlparse
+from urllib.parse import parse_qs, quote_plus, unquote, urljoin, urlparse
+from urllib.request import Request, urlopen
 from email.parser import BytesParser
 from email.policy import default
 
@@ -489,22 +490,124 @@ def summarize_text(text: str, keyword: str = "") -> str:
     return lead + body
 
 
+def fetch_url_bytes(url: str) -> tuple[bytes, str]:
+    if not url.startswith(("http://", "https://")):
+        return b"", ""
+    request = Request(
+        url,
+        headers={
+            "User-Agent": "Mozilla/5.0 (compatible; KurdishJournalSearch/1.0; article summarizer)",
+            "Accept": "text/html,application/pdf,*/*",
+        },
+    )
+    with urlopen(request, timeout=18) as response:
+        content_type = response.headers.get("Content-Type", "").lower()
+        body = response.read(6_000_000)
+    return body, content_type
+
+
+def web_text_from_url(url: str) -> tuple[str, str]:
+    body, content_type = fetch_url_bytes(url)
+
+    if "application/pdf" in content_type or url.lower().split("?")[0].endswith(".pdf"):
+        return extract_pdf_text(body), "full PDF"
+
+    encoding = "utf-8"
+    charset_match = re.search(r"charset=([\w-]+)", content_type)
+    if charset_match:
+        encoding = charset_match.group(1)
+    html_text = body.decode(encoding, errors="replace")
+
+    pdf_link = discover_pdf_link(html_text, url)
+    if pdf_link:
+        try:
+            pdf_body, pdf_type = fetch_url_bytes(pdf_link)
+            if "application/pdf" in pdf_type or pdf_link.lower().split("?")[0].endswith(".pdf"):
+                pdf_text = extract_pdf_text(pdf_body)
+                if len(tokens(pdf_text)) > 80:
+                    return pdf_text, "full PDF discovered from article page"
+        except Exception:
+            pass
+
+    return readable_html_text(html_text), "article page"
+
+
+def discover_pdf_link(markup: str, base_url: str) -> str:
+    links = re.findall(r"""href=["']([^"']+)["']""", markup, flags=re.I)
+    for link in links:
+        label_match = re.search(rf"""href=["']{re.escape(link)}["'][^>]*>(.*?)</a>""", markup, flags=re.I | re.S)
+        label = re.sub(r"<[^>]+>", " ", label_match.group(1)).lower() if label_match else ""
+        href = html.unescape(link)
+        if ".pdf" in href.lower() or "download" in href.lower() or "viewFile" in href or "pdf" in label:
+            return urljoin(base_url, href)
+    return ""
+
+
+def readable_html_text(markup: str) -> str:
+    markup = re.sub(r"(?is)<(script|style|nav|footer|header|aside|form).*?</\1>", " ", markup)
+    markup = re.sub(r"(?is)<br\s*/?>|</p>|</div>|</h[1-6]>|</li>", "\n", markup)
+    text = re.sub(r"(?s)<[^>]+>", " ", markup)
+    text = html.unescape(text).replace("\xa0", " ")
+    lines = [" ".join(line.split()) for line in text.splitlines()]
+    useful = [
+        line
+        for line in lines
+        if len(line) > 35 and not re.search(r"^(login|register|current issue|archives|make a submission|language)$", line, re.I)
+    ]
+    return "\n".join(useful)
+
+
+def article_text_for_summary(article: dict[str, Any]) -> tuple[str, str]:
+    pdf_url = article.get("pdf_url") or ""
+    article_url = article.get("url") or ""
+    for url in [pdf_url, article_url]:
+        if not url:
+            continue
+        try:
+            text, source = web_text_from_url(url)
+        except Exception:
+            continue
+        if len(tokens(text)) > 80:
+            return text, source
+
+    fallback = article.get("abstract") or article.get("summary") or article.get("display_summary") or ""
+    return fallback, "indexed metadata"
+
+
+def important_idea_summary(text: str, title: str = "") -> str:
+    core = summarize_text(text, title)
+    if core.startswith("PDF summary"):
+        core = core.split(": ", 1)[-1]
+    sentences = sentence_split(core)
+    if not sentences:
+        return core
+
+    main = sentences[0]
+    details = sentences[1:6]
+    output = [
+        "Most important idea:",
+        main,
+        "",
+        "Key points:",
+    ]
+    output.extend(f"- {sentence}" for sentence in details)
+    return "\n".join(output)
+
+
 def metadata_summary(article: dict[str, Any]) -> str:
     title = article.get("title", "Untitled")
     authors = ", ".join(article.get("authors", [])) or "Unknown author"
     year = article.get("year") or "n.d."
     journal = article.get("journal", {}).get("title", "Unknown journal")
     institution = article.get("institution", {}).get("name_en", "Unknown institution")
-    abstract = article.get("abstract") or article.get("summary") or article.get("display_summary") or ""
     keywords = ", ".join(article.get("keywords", [])[:8])
     article_url = article.get("url") or "No article link available"
     pdf_url = article.get("pdf_url") or "No direct PDF URL available"
 
-    core = summarize_text(abstract, "") if abstract else "No abstract text is available for this record."
-    if core.startswith("PDF summary: "):
-        core = core[len("PDF summary: ") :]
+    article_text, summary_source = article_text_for_summary(article)
+    core = important_idea_summary(article_text, title) if article_text else "No readable article text is available for this record."
     return (
-        f"Article summary based on indexed metadata\n\n"
+        f"Article summary based on {summary_source}\n\n"
         f"Title:\n{title}\n"
         f"Authors: {authors}\n"
         f"Year: {year}\n"
@@ -726,7 +829,7 @@ class AppHandler(SimpleHTTPRequestHandler):
                 self.send_json(
                     {
                         "characters": len(extracted),
-                        "summary": summarize_text(extracted, keyword),
+                        "summary": important_idea_summary(extracted, keyword),
                         "extracted_preview": extracted[:1200],
                     }
                 )
