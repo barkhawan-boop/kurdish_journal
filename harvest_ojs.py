@@ -130,10 +130,39 @@ def record_to_article(record: ET.Element, source: dict[str, Any], journal_id: st
     }
 
 
+def normalize_name(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "", value.lower())
+
+
+def institution_id_for_source(catalog: dict[str, Any], source: dict[str, Any]) -> str:
+    title_key = normalize_name(source.get("title", ""))
+    for journal in catalog["journals"]:
+        if not journal["id"].startswith("ojs-") and normalize_name(journal["title"]) == title_key:
+            return journal["institution_id"]
+
+    institution_key = normalize_name(source.get("institution", ""))
+    for institution in catalog["institutions"]:
+        if normalize_name(institution["name_en"]) == institution_key:
+            return institution["id"]
+
+    aliases = {
+        "universityofkurdistanhewler": "ukh",
+        "sulaimanipolytechnicuniversity": "sulaimani-polytechnic",
+        "erbilpolytechnicuniversity": "erbil-polytechnic",
+        "duhokpolytechnicuniversity": "duhok-polytechnic",
+        "cihanuniversitysulaimaniya": "cihan-sulaimaniya",
+        "cihanuniversityerbil": "cihan-erbil",
+        "kurdistanregionuniversity": "sulaimani",
+        "kurdistanregionresearchcommunity": "sulaimani",
+        "mesopotamianacademicpress": "sulaimani",
+    }
+    return aliases.get(institution_key, "sulaimani")
+
+
 def ensure_journal(catalog: dict[str, Any], source: dict[str, Any], journal_id: str) -> None:
     if any(journal["id"] == journal_id for journal in catalog["journals"]):
         return
-    institution_id = "sulaimani"
+    institution_id = institution_id_for_source(catalog, source)
     catalog["journals"].append(
         {
             "id": journal_id,
