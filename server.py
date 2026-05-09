@@ -519,31 +519,68 @@ def summary_pdf_bytes(text: str) -> bytes:
     try:
         from reportlab.lib.pagesizes import A4
         from reportlab.lib.units import cm
+        from reportlab.pdfbase import pdfmetrics
+        from reportlab.pdfbase.ttfonts import TTFont
         from reportlab.pdfgen import canvas
     except ImportError as exc:
         raise RuntimeError("PDF export requires reportlab. Run: pip install reportlab") from exc
 
+    regular_font, bold_font = register_pdf_fonts(pdfmetrics, TTFont)
+    text = html.unescape(text).replace("\xa0", " ")
     buffer = io.BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=A4)
     width, height = A4
     x = 1.6 * cm
     y = height - 1.6 * cm
-    pdf.setFont("Helvetica-Bold", 14)
+    pdf.setFont(bold_font, 14)
     pdf.drawString(x, y, "Research Summary")
     y -= 0.8 * cm
-    pdf.setFont("Helvetica", 10)
+    pdf.setFont(regular_font, 10)
     for paragraph in text.splitlines():
         lines = textwrap.wrap(paragraph, width=95) or [""]
         for line in lines:
             if y < 1.6 * cm:
                 pdf.showPage()
-                pdf.setFont("Helvetica", 10)
+                pdf.setFont(regular_font, 10)
                 y = height - 1.6 * cm
-            pdf.drawString(x, y, line)
+            pdf.drawString(x, y, pdf_display_text(line))
             y -= 0.45 * cm
         y -= 0.15 * cm
     pdf.save()
     return buffer.getvalue()
+
+
+def pdf_display_text(text: str) -> str:
+    if not re.search(r"[\u0600-\u06FF]", text):
+        return text
+    try:
+        import arabic_reshaper
+        from bidi.algorithm import get_display
+    except ImportError:
+        return text
+    return get_display(arabic_reshaper.reshape(text))
+
+
+def register_pdf_fonts(pdfmetrics: Any, TTFont: Any) -> tuple[str, str]:
+    candidates = [
+        (
+            BASE_DIR / "assets" / "fonts" / "DejaVuSans.ttf",
+            BASE_DIR / "assets" / "fonts" / "DejaVuSans-Bold.ttf",
+        ),
+        (
+            Path("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
+            Path("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"),
+        ),
+        (Path("C:/Windows/Fonts/DejaVuSans.ttf"), Path("C:/Windows/Fonts/DejaVuSans-Bold.ttf")),
+    ]
+    for regular_path, bold_path in candidates:
+        if regular_path.exists() and bold_path.exists():
+            if "ResearchUnicode" not in pdfmetrics.getRegisteredFontNames():
+                pdfmetrics.registerFont(TTFont("ResearchUnicode", str(regular_path)))
+            if "ResearchUnicodeBold" not in pdfmetrics.getRegisteredFontNames():
+                pdfmetrics.registerFont(TTFont("ResearchUnicodeBold", str(bold_path)))
+            return "ResearchUnicode", "ResearchUnicodeBold"
+    return "Helvetica", "Helvetica-Bold"
 
 
 def parse_multipart_form(body: bytes, content_type: str) -> tuple[dict[str, str], dict[str, bytes]]:
