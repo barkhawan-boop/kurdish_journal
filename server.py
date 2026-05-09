@@ -487,17 +487,20 @@ def metadata_summary(article: dict[str, Any]) -> str:
     article_url = article.get("url") or "No article link available"
     pdf_url = article.get("pdf_url") or "No direct PDF URL available"
 
-    core = summarize_text(abstract, title) if abstract else "No abstract text is available for this record."
+    core = summarize_text(abstract, "") if abstract else "No abstract text is available for this record."
+    if core.startswith("PDF summary: "):
+        core = core[len("PDF summary: ") :]
     return (
         f"Article summary based on indexed metadata\n\n"
-        f"Title: {title}\n"
+        f"Title:\n{title}\n"
         f"Authors: {authors}\n"
         f"Year: {year}\n"
         f"Journal: {journal}\n"
         f"Institution: {institution}\n"
-        f"Keywords: {keywords}\n"
+        f"Keywords:\n{keywords}\n"
         f"Article link: {article_url}\n"
         f"PDF link: {pdf_url}\n\n"
+        f"Summary:\n"
         f"{core}"
     )
 
@@ -556,6 +559,13 @@ def has_arabic_script(text: str) -> bool:
 
 
 def draw_pdf_line(pdf: Any, line: str, x: float, right_x: float, y: float) -> None:
+    if has_arabic_script(line) and ":" in line:
+        label, value = line.split(":", 1)
+        if label.isascii() and value.strip():
+            pdf.drawString(x, y, label + ":")
+            pdf.drawRightString(right_x, y, pdf_display_text(value.strip()))
+            return
+
     display = pdf_display_text(line)
     if has_arabic_script(line):
         pdf.drawRightString(right_x, y, display)
