@@ -6,7 +6,6 @@ import io
 import json
 import os
 import re
-import textwrap
 from dataclasses import dataclass
 from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -520,37 +519,47 @@ def extract_pdf_text(pdf_bytes: bytes) -> str:
 
 def summary_pdf_bytes(text: str) -> bytes:
     try:
+        from reportlab.lib.enums import TA_LEFT, TA_RIGHT
         from reportlab.lib.pagesizes import A4
+        from reportlab.lib.styles import ParagraphStyle
         from reportlab.lib.units import cm
         from reportlab.pdfbase import pdfmetrics
         from reportlab.pdfbase.ttfonts import TTFont
-        from reportlab.pdfgen import canvas
+        from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
     except ImportError as exc:
         raise RuntimeError("PDF export requires reportlab. Run: pip install reportlab") from exc
 
     regular_font, bold_font = register_pdf_fonts(pdfmetrics, TTFont)
     text = html.unescape(text).replace("\xa0", " ")
     buffer = io.BytesIO()
-    pdf = canvas.Canvas(buffer, pagesize=A4)
-    width, height = A4
-    x = 1.6 * cm
-    right_x = width - x
-    y = height - 1.6 * cm
-    pdf.setFont(bold_font, 14)
-    pdf.drawString(x, y, "Research Summary")
-    y -= 0.8 * cm
-    pdf.setFont(regular_font, 10)
+    document = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        leftMargin=1.6 * cm,
+        rightMargin=1.6 * cm,
+        topMargin=1.6 * cm,
+        bottomMargin=1.6 * cm,
+    )
+    title_style = ParagraphStyle("Title", fontName=bold_font, fontSize=14, leading=18, alignment=TA_LEFT)
+    ltr_style = ParagraphStyle("Body", fontName=regular_font, fontSize=10, leading=15, alignment=TA_LEFT)
+    rtl_style = ParagraphStyle(
+        "RTLBody",
+        fontName=regular_font,
+        fontSize=10,
+        leading=16,
+        alignment=TA_RIGHT,
+        wordWrap="RTL",
+    )
+    story = [Paragraph("Research Summary", title_style), Spacer(1, 0.35 * cm)]
     for paragraph in text.splitlines():
-        lines = textwrap.wrap(paragraph, width=95) or [""]
-        for line in lines:
-            if y < 1.6 * cm:
-                pdf.showPage()
-                pdf.setFont(regular_font, 10)
-                y = height - 1.6 * cm
-            draw_pdf_line(pdf, line, x, right_x, y)
-            y -= 0.45 * cm
-        y -= 0.15 * cm
-    pdf.save()
+        clean = paragraph.strip()
+        if not clean:
+            story.append(Spacer(1, 0.2 * cm))
+            continue
+        style = rtl_style if has_arabic_script(clean) else ltr_style
+        story.append(Paragraph(pdf_paragraph_text(clean), style))
+        story.append(Spacer(1, 0.08 * cm))
+    document.build(story)
     return buffer.getvalue()
 
 
@@ -558,19 +567,8 @@ def has_arabic_script(text: str) -> bool:
     return bool(re.search(r"[\u0600-\u06FF]", text))
 
 
-def draw_pdf_line(pdf: Any, line: str, x: float, right_x: float, y: float) -> None:
-    if has_arabic_script(line) and ":" in line:
-        label, value = line.split(":", 1)
-        if label.isascii() and value.strip():
-            pdf.drawString(x, y, label + ":")
-            pdf.drawRightString(right_x, y, pdf_display_text(value.strip()))
-            return
-
-    display = pdf_display_text(line)
-    if has_arabic_script(line):
-        pdf.drawRightString(right_x, y, display)
-    else:
-        pdf.drawString(x, y, display)
+def pdf_paragraph_text(text: str) -> str:
+    return html.escape(pdf_display_text(text)).replace("\n", "<br/>")
 
 
 def pdf_display_text(text: str) -> str:
