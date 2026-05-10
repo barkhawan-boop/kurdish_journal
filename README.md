@@ -1,4 +1,4 @@
-# Northern Iraq Journals Search
+# Kurdistan Academic Journals
 
 Python web app for a multilingual academic journal search platform focused on recognised Kurdistan Region universities, institutes, and journals.
 

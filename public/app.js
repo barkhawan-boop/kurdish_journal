@@ -1,6 +1,6 @@
 const translations = {
   en: {
-    searchTitle: "Search Kurdish-region journals",
+    searchTitle: "Search Kurdistan academic journals",
     searchHint: "Find articles and official journal sources by topic, author, journal, university, city, or keyword.",
     keyword: "Keyword",
     searchButton: "Search",
