@@ -152,6 +152,8 @@ def searchable_text(article: dict[str, Any], journal: dict[str, Any], institutio
         institution.get("city", ""),
         " ".join(article.get("keywords", [])),
         " ".join(journal.get("subjects", [])),
+        " ".join(journal.get("indexing", [])),
+        journal.get("scopus_source_id", ""),
         " ".join(article.get("authors", [])),
     ]
     return " ".join(parts).lower()
@@ -164,6 +166,8 @@ def searchable_source_text(source: dict[str, Any]) -> str:
         source.get("institution", ""),
         source.get("summary", ""),
         " ".join(source.get("subjects", [])),
+        " ".join(source.get("indexing", [])),
+        source.get("scopus_source_id", ""),
     ]
     return " ".join(parts).lower()
 
@@ -250,7 +254,20 @@ def enrich_article(article: dict[str, Any], score: int = 0, reasons: list[str] |
     return result
 
 
-def search_articles(query: str, institution_type: str = "all", subject: str = "all") -> list[dict[str, Any]]:
+def journal_matches_index(journal: dict[str, Any], index_filter: str) -> bool:
+    if index_filter == "all":
+        return True
+    indexing = {value.lower() for value in journal.get("indexing", [])}
+    if index_filter == "scopus-doaj":
+        return "scopus" in indexing or "doaj" in indexing
+    if index_filter == "scopus":
+        return "scopus" in indexing
+    if index_filter == "doaj":
+        return "doaj" in indexing
+    return True
+
+
+def search_articles(query: str, institution_type: str = "all", subject: str = "all", index_filter: str = "all") -> list[dict[str, Any]]:
     query_terms = expanded_query_terms(query)
     hits: list[SearchHit] = []
 
@@ -260,6 +277,8 @@ def search_articles(query: str, institution_type: str = "all", subject: str = "a
         if institution_type != "all" and institution["type"] != institution_type:
             continue
         if subject != "all" and subject not in journal.get("subjects", []):
+            continue
+        if not journal_matches_index(journal, index_filter):
             continue
 
         text = searchable_text(article, journal, institution)
@@ -323,12 +342,27 @@ def enrich_source(source: dict[str, Any], score: int = 0, reasons: list[str] | N
     return result
 
 
-def search_sources(query: str, subject: str = "all") -> list[dict[str, Any]]:
+def source_matches_index(source: dict[str, Any], index_filter: str) -> bool:
+    if index_filter == "all":
+        return True
+    indexing = {value.lower() for value in source.get("indexing", [])}
+    if index_filter == "scopus-doaj":
+        return "scopus" in indexing or "doaj" in indexing
+    if index_filter == "scopus":
+        return "scopus" in indexing
+    if index_filter == "doaj":
+        return "doaj" in indexing
+    return True
+
+
+def search_sources(query: str, subject: str = "all", index_filter: str = "all") -> list[dict[str, Any]]:
     query_terms = expanded_query_terms(query)
     hits: list[SourceHit] = []
 
     for source in SOURCE_LINKS:
         if subject != "all" and subject not in source.get("subjects", []):
+            continue
+        if not source_matches_index(source, index_filter):
             continue
 
         text = searchable_source_text(source)
@@ -365,11 +399,11 @@ def search_sources(query: str, subject: str = "all") -> list[dict[str, Any]]:
     return [enrich_source(hit.source, hit.score, hit.reasons) for hit in hits]
 
 
-def search_all(query: str, institution_type: str = "all", subject: str = "all") -> list[dict[str, Any]]:
-    article_results = search_articles(query, institution_type, subject)
+def search_all(query: str, institution_type: str = "all", subject: str = "all", index_filter: str = "all") -> list[dict[str, Any]]:
+    article_results = search_articles(query, institution_type, subject, index_filter)
     for article in article_results:
         article["kind"] = "article"
-    source_results = search_sources(query, subject)
+    source_results = search_sources(query, subject, index_filter)
     return sorted(
         article_results + source_results,
         key=lambda item: item.get("score", 0),
@@ -793,7 +827,8 @@ class AppHandler(SimpleHTTPRequestHandler):
             query = unquote(params.get("q", [""])[0]).strip()
             institution_type = params.get("type", ["all"])[0]
             subject = params.get("subject", ["all"])[0]
-            results = search_all(query, institution_type, subject)
+            index_filter = params.get("index", ["all"])[0]
+            results = search_all(query, institution_type, subject, index_filter)
             self.send_json({"query": query, "count": len(results), "results": results})
             return
 

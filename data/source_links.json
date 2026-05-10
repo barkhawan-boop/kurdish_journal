@@ -1,52 +1,721 @@
 [
-  {"id": "zanco-pure", "title": "Zanco Journal of Pure and Applied Sciences", "url": "https://zancojournal.su.edu.krd/index.php/JPAS", "institution": "Salahaddin University-Erbil", "subjects": ["science", "engineering", "zanco", "erbil"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "zanco-humanity", "title": "Zanco Journal of Humanity Sciences", "url": "https://zancojournal.su.edu.krd/index.php/JHS", "institution": "Salahaddin University-Erbil", "subjects": ["humanities", "social sciences", "zanco", "erbil"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "zanco-medical", "title": "Zanco Journal of Medical Sciences", "url": "https://zjms.hmu.edu.krd/", "institution": "Hawler Medical University", "subjects": ["medicine", "medical", "health", "erbil"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "zanco-law-politics", "title": "Zanco Journal of Law and Politics", "url": "https://zancojournal.su.edu.krd/index.php/ZJLPS", "institution": "Salahaddin University-Erbil", "subjects": ["law", "politics", "zanco", "erbil"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "education-college", "title": "Education College Journal", "url": "", "institution": "Kurdistan Region university", "subjects": ["education", "teaching"], "summary": "Northern/Kurdistan journal source. Direct URL needs verification."},
-  {"id": "jzs-a", "title": "Journal of Zankoy Sulaimani Part A", "url": "https://journals.univsul.edu.iq/index.php/JZS-A", "institution": "University of Sulaimani", "subjects": ["science", "medicine", "sulaimani"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "jzs-b", "title": "Journal of Zankoy Sulaimani Part B", "url": "https://journals.univsul.edu.iq/index.php/JZS-B", "institution": "University of Sulaimani", "subjects": ["humanities", "social sciences", "sulaimani"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "sjes", "title": "Sulaimani Journal for Engineering Sciences", "url": "https://sjes.univsul.edu.iq/", "institution": "University of Sulaimani", "subjects": ["engineering", "technology", "sulaimani"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "sdj", "title": "Sulaimani Dental Journal", "url": "https://sdj.univsul.edu.iq/", "institution": "University of Sulaimani", "subjects": ["dentistry", "medicine", "sulaimani"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "jsmc", "title": "Journal of Sulaimani Medical College", "url": "https://jsmc.univsul.edu.iq/", "institution": "University of Sulaimani", "subjects": ["medicine", "health", "sulaimani"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "legal-political-studies", "title": "Journal of Legal and Political Studies", "url": "", "institution": "Kurdistan Region university", "subjects": ["law", "politics", "legal studies"], "summary": "Northern/Kurdistan journal source. Direct URL needs verification."},
-  {"id": "erbil-dental", "title": "Erbil Dental Journal", "url": "https://edj.hmu.edu.krd/", "institution": "Hawler Medical University", "subjects": ["dentistry", "medicine", "erbil"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "ejnm", "title": "Erbil Journal of Nursing and Midwifery", "url": "https://ejnm.hmu.edu.krd/", "institution": "Hawler Medical University", "subjects": ["nursing", "midwifery", "medicine", "erbil"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "journal-uod", "title": "Journal of University of Duhok", "url": "", "institution": "University of Duhok", "subjects": ["duhok", "multidisciplinary"], "summary": "Northern/Kurdistan journal source. Direct URL needs verification."},
-  {"id": "duhok-medical", "title": "Duhok Medical Journal", "url": "https://dmj.uod.ac/", "institution": "University of Duhok", "subjects": ["medicine", "medical", "duhok"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "sjuoz", "title": "Science Journal of University of Zakho", "url": "https://journals.uoz.edu.krd/index.php/sjuoz", "institution": "University of Zakho", "subjects": ["science", "zakho"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "hjuoz", "title": "Humanities Journal of University of Zakho", "url": "https://journals.uoz.edu.krd/index.php/hjuoz", "institution": "University of Zakho", "subjects": ["humanities", "zakho"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "raparin-journal", "title": "Journal of University of Raparin", "url": "https://journal.uor.edu.krd/", "institution": "University of Raparin", "subjects": ["raparin", "multidisciplinary"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "halabja-journal", "title": "Halabja University Journal", "url": "https://huj.uoh.edu.iq/", "institution": "University of Halabja", "subjects": ["halabja", "multidisciplinary"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "kujhss", "title": "Koya University Journal of Humanities and Social Sciences", "url": "https://kujhss.koju.edu.krd/", "institution": "Koya University", "subjects": ["humanities", "social sciences", "koya"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "kuj-math-computer", "title": "Koya University Journal of Mathematics and Computer Science", "url": "", "institution": "Koya University", "subjects": ["mathematics", "computer", "computer science", "koya"], "summary": "Northern/Kurdistan journal source. Direct URL needs verification."},
-  {"id": "soran-university-journal", "title": "Soran University Journal", "url": "https://sju.soran.edu.iq/index.php/sju", "institution": "Soran University", "subjects": ["soran", "science", "humanities"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "twejer", "title": "Twejer Journal", "url": "https://sju.soran.edu.iq/index.php/twejer", "institution": "Soran University", "subjects": ["kurdish", "humanities", "soran"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "garmian-journal", "title": "Journal of Garmian University", "url": "https://gj.uogarmian.edu.krd/", "institution": "University of Garmian", "subjects": ["garmian", "multidisciplinary"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "kjar", "title": "Kurdistan Journal of Applied Research", "url": "https://kjar.spu.edu.iq/", "institution": "Sulaimani Polytechnic University", "subjects": ["applied research", "engineering", "medicine", "sulaimani"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "polytechnic-journal", "title": "Polytechnic Journal", "url": "https://polytechnic-journal.epu.edu.iq/", "institution": "Erbil Polytechnic University", "subjects": ["engineering", "technology", "polytechnic", "erbil"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "mitanni", "title": "Mitanni Journal of Humanities", "url": "https://mjh.epu.edu.iq/", "institution": "Erbil Polytechnic University", "subjects": ["humanities", "polytechnic", "erbil"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "dpu-journal", "title": "Duhok Polytechnic University Journal", "url": "https://journal.dp-uni.edu.krd/", "institution": "Duhok Polytechnic University", "subjects": ["polytechnic", "duhok", "technology"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "uhdjst", "title": "UHD Journal of Science and Technology", "url": "https://journals.uhd.edu.iq/index.php/uhdjst", "institution": "University of Human Development", "subjects": ["science", "technology", "uhd", "sulaimani"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "uhd-human-development", "title": "Journal of University of Human Development", "url": "https://journals.uhd.edu.iq/", "institution": "University of Human Development", "subjects": ["humanities", "social sciences", "uhd", "sulaimani"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "ukh-science-engineering", "title": "UKH Journal of Science and Engineering", "url": "https://www.ukh.edu.krd/e-journals/", "institution": "University of Kurdistan Hewler", "subjects": ["science", "engineering", "ukh", "erbil"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "ukh-social", "title": "UKH Journal of Social Sciences", "url": "https://www.ukh.edu.krd/e-journals/", "institution": "University of Kurdistan Hewler", "subjects": ["social sciences", "ukh", "erbil"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "ejse", "title": "Eurasian Journal of Science and Engineering", "url": "https://tiu.edu.iq/scientific-journals/", "institution": "Tishk International University", "subjects": ["science", "engineering", "tishk", "erbil"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "ijses", "title": "International Journal of Social Sciences and Educational Studies", "url": "https://ijses.tiu.edu.iq/", "institution": "Tishk International University", "subjects": ["education", "social sciences", "tishk", "erbil"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "cihan-erbil-scientific", "title": "Cihan University-Erbil Scientific Journal", "url": "https://journal.cihanuniversity.edu.iq/", "institution": "Cihan University-Erbil", "subjects": ["science", "technology", "cihan", "erbil"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "cihan-erbil-humanities", "title": "Cihan University-Erbil Journal of Humanities and Social Sciences", "url": "https://journals.cihanuniversity.edu.iq/index.php/cujhss", "institution": "Cihan University-Erbil", "subjects": ["humanities", "social sciences", "cihan", "erbil"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "cihan-sulaimaniya-scientific", "title": "Scientific Journal of Cihan University Sulaimaniya", "url": "https://journals.cihanuniversity.edu.iq/", "institution": "Cihan University-Sulaimaniya", "subjects": ["science", "technology", "cihan", "sulaimani"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "lfu-science-tech", "title": "LFU Journal of Science and Technology", "url": "https://lfu.edu.krd/journals/", "institution": "Lebanese French University", "subjects": ["science", "technology", "lfu", "erbil"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "komar-humanities", "title": "Komar Journal of Humanities and Social Sciences", "url": "https://komar.edu.iq/research-and-journals/", "institution": "Komar University of Science and Technology", "subjects": ["humanities", "social sciences", "komar", "sulaimani"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "charmo-journal", "title": "Charmo Journal", "url": "https://cusj.uoch.edu.iq/", "institution": "University of Charmo", "subjects": ["science", "charmo", "sulaimani"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "knowledge-scientific", "title": "Knowledge Scientific Journal", "url": "https://knu.edu.iq/journals/", "institution": "Knowledge University", "subjects": ["science", "knowledge university", "erbil"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "auk-journals", "title": "American University of Kurdistan Journals", "url": "", "institution": "American University of Kurdistan", "subjects": ["journals", "auk", "duhok"], "summary": "Northern/Kurdistan journal source. Direct URL needs verification."},
-  {"id": "bayan-scientific", "title": "Bayan Scientific Journal", "url": "https://buj.bayanu.edu.iq/", "institution": "Bayan University", "subjects": ["science", "bayan", "erbil"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "cue-research", "title": "Catholic University in Erbil Research Publications", "url": "", "institution": "Catholic University in Erbil", "subjects": ["research", "publications", "erbil"], "summary": "Northern/Kurdistan research publication source. Direct URL needs verification."},
-  {"id": "nawroz-academic", "title": "Academic Journal of Nawroz University", "url": "https://journals.nawroz.edu.krd/", "institution": "Nawroz University", "subjects": ["academic journal", "nawroz", "duhok"], "summary": "Northern/Kurdistan journal source."},
-  {"id": "iue-academic", "title": "Academic Journal of International University of Erbil", "url": "", "institution": "International University of Erbil", "subjects": ["academic journal", "iue", "erbil"], "summary": "Northern/Kurdistan journal source. Direct URL needs verification."},
-  {"id": "kurdish-studies", "title": "Kurdish Studies Journal", "url": "", "institution": "Kurdistan Region research community", "subjects": ["kurdish studies", "humanities", "kurdish"], "summary": "Northern/Kurdistan-related journal source. Direct URL needs verification."},
-  {"id": "mesopotamian-computer-science", "title": "Mesopotamian Journal of Computer Science", "url": "", "institution": "Mesopotamian Academic Press", "subjects": ["computer", "computer science", "technology"], "summary": "Northern/Kurdistan-related journal source. Direct URL needs verification."},
-  {"id": "mesopotamian-ai-healthcare", "title": "Mesopotamian Journal of Artificial Intelligence in Healthcare", "url": "", "institution": "Mesopotamian Academic Press", "subjects": ["artificial intelligence", "healthcare", "medicine", "computer"], "summary": "Northern/Kurdistan-related journal source. Direct URL needs verification."},
-  {"id": "mesopotamian-cybersecurity", "title": "Mesopotamian Journal of CyberSecurity", "url": "", "institution": "Mesopotamian Academic Press", "subjects": ["cybersecurity", "computer", "technology"], "summary": "Northern/Kurdistan-related journal source. Direct URL needs verification."}
+  {
+    "id": "zanco-pure",
+    "title": "Zanco Journal of Pure and Applied Sciences",
+    "url": "https://zancojournal.su.edu.krd/index.php/JPAS",
+    "institution": "Salahaddin University-Erbil",
+    "subjects": [
+      "science",
+      "engineering",
+      "zanco",
+      "erbil"
+    ],
+    "summary": "Northern/Kurdistan journal source.",
+    "indexing": [
+      "Scopus",
+      "DOAJ"
+    ],
+    "scopus_source_id": "21101239744",
+    "indexing_url": "https://www.scopus.com/sourceid/21101239744"
+  },
+  {
+    "id": "zanco-humanity",
+    "title": "Zanco Journal of Humanity Sciences",
+    "url": "https://zancojournal.su.edu.krd/index.php/JHS",
+    "institution": "Salahaddin University-Erbil",
+    "subjects": [
+      "humanities",
+      "social sciences",
+      "zanco",
+      "erbil"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "zanco-medical",
+    "title": "Zanco Journal of Medical Sciences",
+    "url": "https://zjms.hmu.edu.krd/",
+    "institution": "Hawler Medical University",
+    "subjects": [
+      "medicine",
+      "medical",
+      "health",
+      "erbil"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "zanco-law-politics",
+    "title": "Zanco Journal of Law and Politics",
+    "url": "https://zancojournal.su.edu.krd/index.php/ZJLPS",
+    "institution": "Salahaddin University-Erbil",
+    "subjects": [
+      "law",
+      "politics",
+      "zanco",
+      "erbil"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "education-college",
+    "title": "Education College Journal",
+    "url": "",
+    "institution": "Kurdistan Region university",
+    "subjects": [
+      "education",
+      "teaching"
+    ],
+    "summary": "Northern/Kurdistan journal source. Direct URL needs verification."
+  },
+  {
+    "id": "jzs-a",
+    "title": "Journal of Zankoy Sulaimani Part A",
+    "url": "https://journals.univsul.edu.iq/index.php/JZS-A",
+    "institution": "University of Sulaimani",
+    "subjects": [
+      "science",
+      "medicine",
+      "sulaimani"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "jzs-b",
+    "title": "Journal of Zankoy Sulaimani Part B",
+    "url": "https://journals.univsul.edu.iq/index.php/JZS-B",
+    "institution": "University of Sulaimani",
+    "subjects": [
+      "humanities",
+      "social sciences",
+      "sulaimani"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "sjes",
+    "title": "Sulaimani Journal for Engineering Sciences",
+    "url": "https://sjes.univsul.edu.iq/",
+    "institution": "University of Sulaimani",
+    "subjects": [
+      "engineering",
+      "technology",
+      "sulaimani"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "sdj",
+    "title": "Sulaimani Dental Journal",
+    "url": "https://sdj.univsul.edu.iq/",
+    "institution": "University of Sulaimani",
+    "subjects": [
+      "dentistry",
+      "medicine",
+      "sulaimani"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "jsmc",
+    "title": "Journal of Sulaimani Medical College",
+    "url": "https://jsmc.univsul.edu.iq/",
+    "institution": "University of Sulaimani",
+    "subjects": [
+      "medicine",
+      "health",
+      "sulaimani"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "legal-political-studies",
+    "title": "Journal of Legal and Political Studies",
+    "url": "",
+    "institution": "Kurdistan Region university",
+    "subjects": [
+      "law",
+      "politics",
+      "legal studies"
+    ],
+    "summary": "Northern/Kurdistan journal source. Direct URL needs verification."
+  },
+  {
+    "id": "erbil-dental",
+    "title": "Erbil Dental Journal",
+    "url": "https://edj.hmu.edu.krd/",
+    "institution": "Hawler Medical University",
+    "subjects": [
+      "dentistry",
+      "medicine",
+      "erbil"
+    ],
+    "summary": "Northern/Kurdistan journal source.",
+    "indexing": [
+      "Scopus",
+      "DOAJ"
+    ],
+    "scopus_source_id": "",
+    "indexing_url": "https://edj.hmu.edu.krd/index.php/journal"
+  },
+  {
+    "id": "ejnm",
+    "title": "Erbil Journal of Nursing and Midwifery",
+    "url": "https://ejnm.hmu.edu.krd/",
+    "institution": "Hawler Medical University",
+    "subjects": [
+      "nursing",
+      "midwifery",
+      "medicine",
+      "erbil"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "journal-uod",
+    "title": "Journal of University of Duhok",
+    "url": "",
+    "institution": "University of Duhok",
+    "subjects": [
+      "duhok",
+      "multidisciplinary"
+    ],
+    "summary": "Northern/Kurdistan journal source. Direct URL needs verification."
+  },
+  {
+    "id": "duhok-medical",
+    "title": "Duhok Medical Journal",
+    "url": "https://dmj.uod.ac/",
+    "institution": "University of Duhok",
+    "subjects": [
+      "medicine",
+      "medical",
+      "duhok"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "sjuoz",
+    "title": "Science Journal of University of Zakho",
+    "url": "https://journals.uoz.edu.krd/index.php/sjuoz",
+    "institution": "University of Zakho",
+    "subjects": [
+      "science",
+      "zakho"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "hjuoz",
+    "title": "Humanities Journal of University of Zakho",
+    "url": "https://journals.uoz.edu.krd/index.php/hjuoz",
+    "institution": "University of Zakho",
+    "subjects": [
+      "humanities",
+      "zakho"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "raparin-journal",
+    "title": "Journal of University of Raparin",
+    "url": "https://journal.uor.edu.krd/",
+    "institution": "University of Raparin",
+    "subjects": [
+      "raparin",
+      "multidisciplinary"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "halabja-journal",
+    "title": "Halabja University Journal",
+    "url": "https://huj.uoh.edu.iq/",
+    "institution": "University of Halabja",
+    "subjects": [
+      "halabja",
+      "multidisciplinary"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "kujhss",
+    "title": "Koya University Journal of Humanities and Social Sciences",
+    "url": "https://kujhss.koju.edu.krd/",
+    "institution": "Koya University",
+    "subjects": [
+      "humanities",
+      "social sciences",
+      "koya"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "kuj-math-computer",
+    "title": "Koya University Journal of Mathematics and Computer Science",
+    "url": "",
+    "institution": "Koya University",
+    "subjects": [
+      "mathematics",
+      "computer",
+      "computer science",
+      "koya"
+    ],
+    "summary": "Northern/Kurdistan journal source. Direct URL needs verification."
+  },
+  {
+    "id": "soran-university-journal",
+    "title": "Soran University Journal",
+    "url": "https://sju.soran.edu.iq/index.php/sju",
+    "institution": "Soran University",
+    "subjects": [
+      "soran",
+      "science",
+      "humanities"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "twejer",
+    "title": "Twejer Journal",
+    "url": "https://sju.soran.edu.iq/index.php/twejer",
+    "institution": "Soran University",
+    "subjects": [
+      "kurdish",
+      "humanities",
+      "soran"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "garmian-journal",
+    "title": "Journal of Garmian University",
+    "url": "https://gj.uogarmian.edu.krd/",
+    "institution": "University of Garmian",
+    "subjects": [
+      "garmian",
+      "multidisciplinary"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "kjar",
+    "title": "Kurdistan Journal of Applied Research",
+    "url": "https://kjar.spu.edu.iq/",
+    "institution": "Sulaimani Polytechnic University",
+    "subjects": [
+      "applied research",
+      "engineering",
+      "medicine",
+      "sulaimani"
+    ],
+    "summary": "Northern/Kurdistan journal source.",
+    "indexing": [
+      "Scopus",
+      "DOAJ"
+    ],
+    "scopus_source_id": "21101312177",
+    "indexing_url": "https://www.scopus.com/sourceid/21101312177"
+  },
+  {
+    "id": "polytechnic-journal",
+    "title": "Polytechnic Journal",
+    "url": "https://polytechnic-journal.epu.edu.iq/",
+    "institution": "Erbil Polytechnic University",
+    "subjects": [
+      "engineering",
+      "technology",
+      "polytechnic",
+      "erbil"
+    ],
+    "summary": "Northern/Kurdistan journal source.",
+    "indexing": [
+      "Scopus",
+      "DOAJ"
+    ],
+    "scopus_source_id": "21101337822",
+    "indexing_url": "https://www.scopus.com/sourceid/21101337822"
+  },
+  {
+    "id": "mitanni",
+    "title": "Mitanni Journal of Humanities",
+    "url": "https://mjh.epu.edu.iq/",
+    "institution": "Erbil Polytechnic University",
+    "subjects": [
+      "humanities",
+      "polytechnic",
+      "erbil"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "dpu-journal",
+    "title": "Duhok Polytechnic University Journal",
+    "url": "https://journal.dp-uni.edu.krd/",
+    "institution": "Duhok Polytechnic University",
+    "subjects": [
+      "polytechnic",
+      "duhok",
+      "technology"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "uhdjst",
+    "title": "UHD Journal of Science and Technology",
+    "url": "https://journals.uhd.edu.iq/index.php/uhdjst",
+    "institution": "University of Human Development",
+    "subjects": [
+      "science",
+      "technology",
+      "uhd",
+      "sulaimani"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "uhd-human-development",
+    "title": "Journal of University of Human Development",
+    "url": "https://journals.uhd.edu.iq/",
+    "institution": "University of Human Development",
+    "subjects": [
+      "humanities",
+      "social sciences",
+      "uhd",
+      "sulaimani"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "ukh-science-engineering",
+    "title": "UKH Journal of Science and Engineering",
+    "url": "https://www.ukh.edu.krd/e-journals/",
+    "institution": "University of Kurdistan Hewler",
+    "subjects": [
+      "science",
+      "engineering",
+      "ukh",
+      "erbil"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "ukh-social",
+    "title": "UKH Journal of Social Sciences",
+    "url": "https://www.ukh.edu.krd/e-journals/",
+    "institution": "University of Kurdistan Hewler",
+    "subjects": [
+      "social sciences",
+      "ukh",
+      "erbil"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "ejse",
+    "title": "Eurasian Journal of Science and Engineering",
+    "url": "https://tiu.edu.iq/scientific-journals/",
+    "institution": "Tishk International University",
+    "subjects": [
+      "science",
+      "engineering",
+      "tishk",
+      "erbil"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "ijses",
+    "title": "International Journal of Social Sciences and Educational Studies",
+    "url": "https://ijses.tiu.edu.iq/",
+    "institution": "Tishk International University",
+    "subjects": [
+      "education",
+      "social sciences",
+      "tishk",
+      "erbil"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "cihan-erbil-scientific",
+    "title": "Cihan University-Erbil Scientific Journal",
+    "url": "https://journal.cihanuniversity.edu.iq/",
+    "institution": "Cihan University-Erbil",
+    "subjects": [
+      "science",
+      "technology",
+      "cihan",
+      "erbil"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "cihan-erbil-humanities",
+    "title": "Cihan University-Erbil Journal of Humanities and Social Sciences",
+    "url": "https://journals.cihanuniversity.edu.iq/index.php/cujhss",
+    "institution": "Cihan University-Erbil",
+    "subjects": [
+      "humanities",
+      "social sciences",
+      "cihan",
+      "erbil"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "cihan-sulaimaniya-scientific",
+    "title": "Scientific Journal of Cihan University Sulaimaniya",
+    "url": "https://journals.cihanuniversity.edu.iq/",
+    "institution": "Cihan University-Sulaimaniya",
+    "subjects": [
+      "science",
+      "technology",
+      "cihan",
+      "sulaimani"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "lfu-science-tech",
+    "title": "LFU Journal of Science and Technology",
+    "url": "https://lfu.edu.krd/journals/",
+    "institution": "Lebanese French University",
+    "subjects": [
+      "science",
+      "technology",
+      "lfu",
+      "erbil"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "komar-humanities",
+    "title": "Komar Journal of Humanities and Social Sciences",
+    "url": "https://komar.edu.iq/research-and-journals/",
+    "institution": "Komar University of Science and Technology",
+    "subjects": [
+      "humanities",
+      "social sciences",
+      "komar",
+      "sulaimani"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "charmo-journal",
+    "title": "Charmo Journal",
+    "url": "https://cusj.uoch.edu.iq/",
+    "institution": "University of Charmo",
+    "subjects": [
+      "science",
+      "charmo",
+      "sulaimani"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "knowledge-scientific",
+    "title": "Knowledge Scientific Journal",
+    "url": "https://knu.edu.iq/journals/",
+    "institution": "Knowledge University",
+    "subjects": [
+      "science",
+      "knowledge university",
+      "erbil"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "auk-journals",
+    "title": "American University of Kurdistan Journals",
+    "url": "",
+    "institution": "American University of Kurdistan",
+    "subjects": [
+      "journals",
+      "auk",
+      "duhok"
+    ],
+    "summary": "Northern/Kurdistan journal source. Direct URL needs verification."
+  },
+  {
+    "id": "bayan-scientific",
+    "title": "Bayan Scientific Journal",
+    "url": "https://buj.bayanu.edu.iq/",
+    "institution": "Bayan University",
+    "subjects": [
+      "science",
+      "bayan",
+      "erbil"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "cue-research",
+    "title": "Catholic University in Erbil Research Publications",
+    "url": "",
+    "institution": "Catholic University in Erbil",
+    "subjects": [
+      "research",
+      "publications",
+      "erbil"
+    ],
+    "summary": "Northern/Kurdistan research publication source. Direct URL needs verification."
+  },
+  {
+    "id": "nawroz-academic",
+    "title": "Academic Journal of Nawroz University",
+    "url": "https://journals.nawroz.edu.krd/",
+    "institution": "Nawroz University",
+    "subjects": [
+      "academic journal",
+      "nawroz",
+      "duhok"
+    ],
+    "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "iue-academic",
+    "title": "Academic Journal of International University of Erbil",
+    "url": "",
+    "institution": "International University of Erbil",
+    "subjects": [
+      "academic journal",
+      "iue",
+      "erbil"
+    ],
+    "summary": "Northern/Kurdistan journal source. Direct URL needs verification."
+  },
+  {
+    "id": "kurdish-studies",
+    "title": "Kurdish Studies Journal",
+    "url": "",
+    "institution": "Kurdistan Region research community",
+    "subjects": [
+      "kurdish studies",
+      "humanities",
+      "kurdish"
+    ],
+    "summary": "Northern/Kurdistan-related journal source. Direct URL needs verification."
+  },
+  {
+    "id": "mesopotamian-computer-science",
+    "title": "Mesopotamian Journal of Computer Science",
+    "url": "",
+    "institution": "Mesopotamian Academic Press",
+    "subjects": [
+      "computer",
+      "computer science",
+      "technology"
+    ],
+    "summary": "Northern/Kurdistan-related journal source. Direct URL needs verification."
+  },
+  {
+    "id": "mesopotamian-ai-healthcare",
+    "title": "Mesopotamian Journal of Artificial Intelligence in Healthcare",
+    "url": "",
+    "institution": "Mesopotamian Academic Press",
+    "subjects": [
+      "artificial intelligence",
+      "healthcare",
+      "medicine",
+      "computer"
+    ],
+    "summary": "Northern/Kurdistan-related journal source. Direct URL needs verification."
+  },
+  {
+    "id": "mesopotamian-cybersecurity",
+    "title": "Mesopotamian Journal of CyberSecurity",
+    "url": "",
+    "institution": "Mesopotamian Academic Press",
+    "subjects": [
+      "cybersecurity",
+      "computer",
+      "technology"
+    ],
+    "summary": "Northern/Kurdistan-related journal source. Direct URL needs verification."
+  },
+  {
+    "id": "qubahan-academic",
+    "title": "Qubahan Academic Journal",
+    "url": "https://journal.qubahan.com/index.php/qaj",
+    "institution": "Qubahan Academic Publisher",
+    "subjects": [
+      "science",
+      "technology",
+      "education",
+      "management",
+      "artificial intelligence",
+      "business"
+    ],
+    "summary": "Scopus and DOAJ indexed journal source for Qubahan Academic Journal.",
+    "indexing": [
+      "Scopus",
+      "DOAJ"
+    ],
+    "scopus_source_id": "21101173094",
+    "indexing_url": "https://www.scopus.com/sourceid/21101173094"
+  },
+  {
+    "id": "aro-koya",
+    "title": "ARO-The Scientific Journal of Koya University",
+    "url": "https://aro.koyauniversity.org/",
+    "institution": "Koya University",
+    "subjects": [
+      "science",
+      "engineering",
+      "technology",
+      "koya"
+    ],
+    "summary": "Scopus and DOAJ indexed scientific journal of Koya University.",
+    "indexing": [
+      "Scopus",
+      "DOAJ"
+    ],
+    "scopus_source_id": "21101277887",
+    "indexing_url": "https://www.scopus.com/sourceid/21101277887"
+  },
+  {
+    "id": "josse",
+    "title": "Journal of Studies in Science and Engineering",
+    "url": "https://engiscience.com/index.php/josse/index",
+    "institution": "EngiScience Publisher",
+    "subjects": [
+      "science",
+      "engineering",
+      "architecture",
+      "environmental engineering",
+      "materials science",
+      "mathematics"
+    ],
+    "summary": "Scopus and DOAJ indexed Journal of Studies in Science and Engineering source.",
+    "indexing": [
+      "Scopus",
+      "DOAJ"
+    ],
+    "scopus_source_id": "21101192894",
+    "indexing_url": "https://www.scopus.com/sourceid/21101192894"
+  },
+  {
+    "id": "passer-basic-applied",
+    "title": "Passer Journal of Basic and Applied Sciences",
+    "url": "https://passer.garmian.edu.krd/",
+    "institution": "University of Garmian",
+    "subjects": [
+      "basic sciences",
+      "applied sciences",
+      "biology",
+      "chemistry",
+      "physics",
+      "engineering",
+      "computer science"
+    ],
+    "summary": "Scopus and DOAJ indexed basic and applied sciences journal of University of Garmian.",
+    "indexing": [
+      "Scopus",
+      "DOAJ"
+    ],
+    "scopus_source_id": "21101151576",
+    "indexing_url": "https://www.scopus.com/sourceid/21101151576"
+  }
 ]

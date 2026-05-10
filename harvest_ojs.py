@@ -172,6 +172,9 @@ def ensure_journal(catalog: dict[str, Any], source: dict[str, Any], journal_id: 
             "issn": "",
             "impact_factor": None,
             "ranking": "Not verified",
+            "indexing": source.get("indexing", []),
+            "scopus_source_id": source.get("scopus_source_id", ""),
+            "indexing_url": source.get("indexing_url", ""),
         }
     )
 

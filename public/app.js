@@ -9,6 +9,7 @@ const translations = {
     public: "Public",
     private: "Private",
     subject: "Subject",
+    indexCategory: "Index category",
     institutions: "Institutions",
     journals: "Journals",
     seedArticles: "Indexed Articles",
@@ -54,6 +55,7 @@ const translations = {
     public: "حکومی",
     private: "تایبەت",
     subject: "بواری توێژینەوە",
+    indexCategory: "پۆلی ئیندێکس",
     institutions: "دامەزراوەکان",
     journals: "گۆڤارەکان",
     seedArticles: "تۆمارە ئیندێکسکراوەکان",
@@ -99,6 +101,7 @@ const translations = {
     public: "حكومية",
     private: "أهلية",
     subject: "التخصص",
+    indexCategory: "فئة الفهرسة",
     institutions: "المؤسسات",
     journals: "المجلات",
     seedArticles: "مقالات مفهرسة",
@@ -291,7 +294,8 @@ async function runSearch() {
   const q = $("#query").value.trim();
   const type = $("#type-filter").value;
   const subject = $("#subject-filter").value;
-  const params = new URLSearchParams({ q, type, subject });
+  const index = $("#index-filter").value;
+  const params = new URLSearchParams({ q, type, subject, index });
   const response = await fetch(`/api/search?${params}`);
   const payload = await response.json();
   state.results = payload.results;
@@ -331,6 +335,7 @@ function renderResults() {
     node.querySelector(".journal-name").textContent = article.journal.title;
     node.querySelector(".institution-name").textContent = localizedInstitution(article.institution);
     node.querySelector(".impact-factor").textContent = article.journal.impact_factor ?? "Not verified";
+    node.querySelector(".indexing-status").textContent = (article.journal.indexing || []).join(" / ") || "Not verified";
     node.querySelector(".ranking").textContent = article.journal.ranking || "Not verified";
     node.querySelector(".citation").textContent = citation;
     node.querySelector(".copy-citation").textContent = t("copyCitation");
@@ -534,6 +539,7 @@ $("#search-form").addEventListener("submit", (event) => {
 });
 $("#type-filter").addEventListener("change", runSearch);
 $("#subject-filter").addEventListener("change", runSearch);
+$("#index-filter").addEventListener("change", runSearch);
 $("#citation-style").addEventListener("change", renderResults);
 $("#paraphrase-button").addEventListener("click", paraphrase);
 $("#pdf-summary-button").addEventListener("click", summarizePdf);
