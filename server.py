@@ -71,6 +71,47 @@ EXPANSIONS = {
     "duhok": {"دهۆک", "دهوك", "badini"},
 }
 
+SUBJECT_LABELS = {
+    "agriculture": "Agriculture",
+    "applied sciences": "Applied Sciences",
+    "architecture": "Architecture",
+    "artificial intelligence": "Artificial Intelligence",
+    "basic sciences": "Basic Sciences",
+    "biology": "Biology",
+    "chemistry": "Chemistry",
+    "computer science": "Computer Science",
+    "dentistry": "Dentistry",
+    "education": "Education",
+    "engineering": "Engineering",
+    "environment": "Environment",
+    "environmental engineering": "Environmental Engineering",
+    "health": "Health Sciences",
+    "humanities": "Humanities",
+    "law": "Law",
+    "management": "Business and Management",
+    "materials science": "Materials Science",
+    "mathematics": "Mathematics",
+    "medicine": "Medicine",
+    "midwifery": "Midwifery",
+    "multidisciplinary": "Multidisciplinary",
+    "nursing": "Nursing",
+    "pharmacy": "Pharmacy",
+    "physics": "Physics",
+    "politics": "Political Science",
+    "science": "Science",
+    "social sciences": "Social Sciences",
+    "strategic studies": "Strategic Studies",
+    "technology": "Technology",
+}
+
+SUBJECT_ALIASES = {
+    "ai": "artificial intelligence",
+    "applied research": "applied sciences",
+    "business": "management",
+    "computer": "computer science",
+    "medical": "medicine",
+}
+
 
 def fuzzy_token_matches(query_terms: set[str], indexed_tokens: set[str]) -> set[str]:
     matches: set[str] = set()
@@ -84,6 +125,22 @@ def fuzzy_token_matches(query_terms: set[str], indexed_tokens: set[str]) -> set[
                 matches.add(term)
                 break
     return matches
+
+
+def clean_subject(subject: str) -> str:
+    key = " ".join(subject.lower().strip().split())
+    key = SUBJECT_ALIASES.get(key, key)
+    return key if key in SUBJECT_LABELS else ""
+
+
+def catalog_subjects() -> list[dict[str, str]]:
+    raw_subjects = {
+        subject
+        for item in [*CATALOG["journals"], *SOURCE_LINKS]
+        for subject in item.get("subjects", [])
+    }
+    clean = {clean_subject(subject) for subject in raw_subjects}
+    return [{"value": subject, "label": SUBJECT_LABELS[subject]} for subject in sorted(clean) if subject]
 
 
 @dataclass(frozen=True)
@@ -276,7 +333,7 @@ def search_articles(query: str, institution_type: str = "all", subject: str = "a
         institution = INSTITUTIONS[journal["institution_id"]]
         if institution_type != "all" and institution["type"] != institution_type:
             continue
-        if subject != "all" and subject not in journal.get("subjects", []):
+        if subject != "all" and subject not in {clean_subject(item) for item in journal.get("subjects", [])}:
             continue
         if not journal_matches_index(journal, index_filter):
             continue
@@ -360,7 +417,7 @@ def search_sources(query: str, subject: str = "all", index_filter: str = "all") 
     hits: list[SourceHit] = []
 
     for source in SOURCE_LINKS:
-        if subject != "all" and subject not in source.get("subjects", []):
+        if subject != "all" and subject not in {clean_subject(item) for item in source.get("subjects", [])}:
             continue
         if not source_matches_index(source, index_filter):
             continue
@@ -803,10 +860,7 @@ class AppHandler(SimpleHTTPRequestHandler):
                     "journals": CATALOG["journals"],
                     "source_count": len(SOURCE_LINKS),
                     "article_count": len(CATALOG["articles"]),
-                    "subjects": sorted(
-                        {subject for journal in CATALOG["journals"] for subject in journal["subjects"]}
-                        | {subject for source in SOURCE_LINKS for subject in source.get("subjects", [])}
-                    ),
+                    "subjects": catalog_subjects(),
                 }
             )
             return

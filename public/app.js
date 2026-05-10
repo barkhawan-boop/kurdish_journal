@@ -210,8 +210,8 @@ async function loadCatalog() {
   subjectFilter.querySelectorAll("option:not([value='all'])").forEach((option) => option.remove());
   state.catalog.subjects.forEach((subject) => {
     const option = document.createElement("option");
-    option.value = subject;
-    option.textContent = subject;
+    option.value = typeof subject === "string" ? subject : subject.value;
+    option.textContent = typeof subject === "string" ? subject : subject.label;
     subjectFilter.appendChild(option);
   });
   await loadLatestArticles();
