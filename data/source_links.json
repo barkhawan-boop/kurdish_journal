@@ -58,6 +58,19 @@
     "summary": "Northern/Kurdistan journal source."
   },
   {
+    "id": "social-contract-journal",
+    "title": "Social Contract Journal",
+    "url": "https://clr.gov.krd/magzine/",
+    "institution": "Center for Legal Research, Kurdistan Regional Government",
+    "subjects": [
+      "law",
+      "legal studies",
+      "social sciences",
+      "kurdistan"
+    ],
+    "summary": "Official Center for Legal Research magazine/journal page for the Social Contract Journal record."
+  },
+  {
     "id": "education-college",
     "title": "Education College Journal",
     "url": "",
@@ -131,14 +144,14 @@
   {
     "id": "legal-political-studies",
     "title": "Journal of Legal and Political Studies",
-    "url": "",
-    "institution": "Kurdistan Region university",
+    "url": "https://jlps.univsul.edu.iq/",
+    "institution": "University of Sulaimani",
     "subjects": [
       "law",
       "politics",
       "legal studies"
     ],
-    "summary": "Northern/Kurdistan journal source. Direct URL needs verification."
+    "summary": "Official Journal of Legal and Political Studies source."
   },
   {
     "id": "erbil-dental",
@@ -174,13 +187,39 @@
   {
     "id": "journal-uod",
     "title": "Journal of University of Duhok",
-    "url": "",
+    "url": "https://journal.uod.ac/",
     "institution": "University of Duhok",
     "subjects": [
       "duhok",
       "multidisciplinary"
     ],
-    "summary": "Northern/Kurdistan journal source. Direct URL needs verification."
+    "summary": "Official Journal of University of Duhok source."
+  },
+  {
+    "id": "zjhs-uod",
+    "title": "Zanin Journal of Humanities Studies",
+    "url": "https://zjhs.uod.ac/",
+    "institution": "University of Duhok",
+    "subjects": [
+      "humanities",
+      "social sciences",
+      "duhok",
+      "badini"
+    ],
+    "summary": "Official Zanin Journal of Humanities Studies source."
+  },
+  {
+    "id": "zjse-uod",
+    "title": "Zanin Journal of Science and Engineering",
+    "url": "https://zjse.uod.ac/index.php/zjse",
+    "institution": "University of Duhok",
+    "subjects": [
+      "science",
+      "engineering",
+      "duhok",
+      "badini"
+    ],
+    "summary": "Official Zanin Journal of Science and Engineering source."
   },
   {
     "id": "duhok-medical",
@@ -237,6 +276,19 @@
       "multidisciplinary"
     ],
     "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "advanced-medical-journal",
+    "title": "Advanced Medical Journal",
+    "url": "https://amj.khcms.edu.krd/index.php/main",
+    "institution": "Kurdistan Higher Council of Medical Specialties",
+    "subjects": [
+      "medicine",
+      "medical",
+      "health",
+      "kurdistan"
+    ],
+    "summary": "Official Advanced Medical Journal source."
   },
   {
     "id": "kujhss",
@@ -297,6 +349,19 @@
       "multidisciplinary"
     ],
     "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "aran-journal",
+    "title": "Aran Journal for Language and Humanities",
+    "url": "https://aran.garmian.edu.krd/",
+    "institution": "University of Garmian",
+    "subjects": [
+      "language",
+      "humanities",
+      "garmian",
+      "kurdish"
+    ],
+    "summary": "Official Aran journal source for language and humanities."
   },
   {
     "id": "kjar",
@@ -389,7 +454,7 @@
   {
     "id": "ukh-science-engineering",
     "title": "UKH Journal of Science and Engineering",
-    "url": "https://www.ukh.edu.krd/e-journals/",
+    "url": "https://journals.ukh.edu.krd/index.php/ukhjse",
     "institution": "University of Kurdistan Hewler",
     "subjects": [
       "science",
@@ -402,7 +467,7 @@
   {
     "id": "ukh-social",
     "title": "UKH Journal of Social Sciences",
-    "url": "https://www.ukh.edu.krd/e-journals/",
+    "url": "https://journals.ukh.edu.krd/index.php/ukhjss",
     "institution": "University of Kurdistan Hewler",
     "subjects": [
       "social sciences",
@@ -414,7 +479,7 @@
   {
     "id": "ejse",
     "title": "Eurasian Journal of Science and Engineering",
-    "url": "https://tiu.edu.iq/scientific-journals/",
+    "url": "https://eajse.tiu.edu.iq/",
     "institution": "Tishk International University",
     "subjects": [
       "science",
@@ -466,7 +531,7 @@
   {
     "id": "cihan-sulaimaniya-scientific",
     "title": "Scientific Journal of Cihan University Sulaimaniya",
-    "url": "https://journals.cihanuniversity.edu.iq/",
+    "url": "https://journal.sulicihan.edu.krd/index.php/sjcus",
     "institution": "Cihan University-Sulaimaniya",
     "subjects": [
       "science",
@@ -475,6 +540,19 @@
       "sulaimani"
     ],
     "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "cihan-duhok-scientific",
+    "title": "Scientific Journal of Cihan University-Duhok",
+    "url": "https://duhokcihan.edu.krd/",
+    "institution": "Cihan University-Duhok",
+    "subjects": [
+      "science",
+      "technology",
+      "cihan",
+      "duhok"
+    ],
+    "summary": "Official Cihan University-Duhok site. A dedicated journal archive URL was not verified."
   },
   {
     "id": "lfu-science-tech",
@@ -488,6 +566,20 @@
       "erbil"
     ],
     "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "qalaa-zanist",
+    "title": "Qalaai Zanist Scientific Journal",
+    "url": "https://journal.lfu.edu.krd/ojs/index.php/qzj",
+    "institution": "Lebanese French University",
+    "subjects": [
+      "humanities",
+      "social sciences",
+      "law",
+      "lfu",
+      "erbil"
+    ],
+    "summary": "Official Qalaai Zanist Scientific Journal source."
   },
   {
     "id": "komar-humanities",
@@ -513,6 +605,32 @@
       "sulaimani"
     ],
     "summary": "Northern/Kurdistan journal source."
+  },
+  {
+    "id": "galla",
+    "title": "Galla: The Scientific Journal of KISSR",
+    "url": "https://galla.kissr.edu.iq/index.php/galla",
+    "institution": "Kurdistani Institution for Strategic Studies and Scientific Research",
+    "subjects": [
+      "natural sciences",
+      "biomedicine",
+      "kurdistan",
+      "research"
+    ],
+    "summary": "Official Galla journal source."
+  },
+  {
+    "id": "zhindar-journal",
+    "title": "Zhindar Journal",
+    "url": "https://www.kissr.edu.iq/",
+    "institution": "Kurdistani Institution for Strategic Studies and Scientific Research",
+    "subjects": [
+      "kurdish",
+      "strategic studies",
+      "research",
+      "kurdistan"
+    ],
+    "summary": "Official KISSR site for the Zhindar Journal record. A dedicated journal archive URL was not verified."
   },
   {
     "id": "knowledge-scientific",
@@ -577,14 +695,14 @@
   {
     "id": "iue-academic",
     "title": "Academic Journal of International University of Erbil",
-    "url": "",
+    "url": "https://ojs.cihanrtv.com/index.php/public/index",
     "institution": "International University of Erbil",
     "subjects": [
       "academic journal",
       "iue",
       "erbil"
     ],
-    "summary": "Northern/Kurdistan journal source. Direct URL needs verification."
+    "summary": "Official Academic Journal of International University of Erbil source."
   },
   {
     "id": "kurdish-studies",
@@ -597,6 +715,70 @@
       "kurdish"
     ],
     "summary": "Northern/Kurdistan-related journal source. Direct URL needs verification."
+  },
+  {
+    "id": "kurdish-academy",
+    "title": "Kurdish Academy Journal",
+    "url": "https://journal.ka.gov.krd/",
+    "institution": "Kurdish Academy",
+    "subjects": [
+      "kurdish",
+      "language",
+      "humanities",
+      "academy"
+    ],
+    "summary": "Official Kurdish Academy Journal source."
+  },
+  {
+    "id": "jopss",
+    "title": "Journal of Political and Security Studies",
+    "url": "https://jopss.centerfs.org/index.php/JOPSS",
+    "institution": "Center for Research and Study of Security",
+    "subjects": [
+      "politics",
+      "security studies",
+      "social sciences",
+      "kurdistan"
+    ],
+    "summary": "Official Journal of Political and Security Studies source."
+  },
+  {
+    "id": "yaqeen-legal-studies",
+    "title": "Yaqeen Journal for Legal Studies",
+    "url": "https://lawojs.online/index.php/law",
+    "institution": "College of Law, University of Duhok",
+    "subjects": [
+      "law",
+      "legal studies",
+      "duhok"
+    ],
+    "summary": "Official Yaqeen Journal for Legal Studies source."
+  },
+  {
+    "id": "zanco-physical-education",
+    "title": "Zanco Journal of Physical Education and Sports Sciences",
+    "url": "https://zancojournal.su.edu.krd/index.php/ZJPESS",
+    "institution": "Salahaddin University-Erbil",
+    "subjects": [
+      "physical education",
+      "sports science",
+      "education",
+      "erbil"
+    ],
+    "summary": "Official Zanco Journal of Physical Education and Sports Sciences source."
+  },
+  {
+    "id": "ejmss",
+    "title": "Eurasian Journal of Management and Social Sciences",
+    "url": "https://ejmss.tiu.edu.iq/",
+    "institution": "Tishk International University",
+    "subjects": [
+      "management",
+      "social sciences",
+      "business",
+      "tishk"
+    ],
+    "summary": "Official Eurasian Journal of Management and Social Sciences source."
   },
   {
     "id": "mesopotamian-computer-science",

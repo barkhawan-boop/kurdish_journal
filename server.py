@@ -136,7 +136,7 @@ def clean_subject(subject: str) -> str:
 def catalog_subjects() -> list[dict[str, str]]:
     raw_subjects = {
         subject
-        for item in [*CATALOG["journals"], *SOURCE_LINKS]
+        for item in [*[journal for journal in CATALOG["journals"] if allowed_journal(journal)], *SOURCE_LINKS]
         for subject in item.get("subjects", [])
     }
     clean = {clean_subject(subject) for subject in raw_subjects}
@@ -171,14 +171,36 @@ CATALOG = load_catalog()
 SOURCE_LINKS = load_source_links()
 INSTITUTIONS = {item["id"]: item for item in CATALOG["institutions"]}
 JOURNALS = {item["id"]: item for item in CATALOG["journals"]}
+SOURCE_IDS = {item["id"] for item in SOURCE_LINKS}
 
 
 def reload_catalog_globals() -> None:
-    global CATALOG, SOURCE_LINKS, INSTITUTIONS, JOURNALS
+    global CATALOG, SOURCE_LINKS, INSTITUTIONS, JOURNALS, SOURCE_IDS
     CATALOG = load_catalog()
     SOURCE_LINKS = load_source_links()
     INSTITUTIONS = {item["id"]: item for item in CATALOG["institutions"]}
     JOURNALS = {item["id"]: item for item in CATALOG["journals"]}
+    SOURCE_IDS = {item["id"] for item in SOURCE_LINKS}
+
+
+def journal_source_id(journal_id: str) -> str:
+    return journal_id[4:] if journal_id.startswith("ojs-") else journal_id
+
+
+def allowed_journal(journal: dict[str, Any]) -> bool:
+    source_id = journal_source_id(journal.get("id", ""))
+    if source_id in SOURCE_IDS:
+        return True
+    return bool({"scopus", "doaj"} & {item.lower() for item in journal.get("indexing", [])})
+
+
+def allowed_articles() -> list[dict[str, Any]]:
+    return [article for article in CATALOG["articles"] if allowed_journal(JOURNALS.get(article.get("journal_id", ""), {}))]
+
+
+def unique_allowed_journal_count() -> int:
+    titles = {" ".join(journal.get("title", "").lower().split()) for journal in CATALOG["journals"] if allowed_journal(journal)}
+    return len({title for title in titles if title})
 
 
 def tokens(text: str) -> list[str]:
@@ -328,7 +350,7 @@ def search_articles(query: str, institution_type: str = "all", subject: str = "a
     query_terms = expanded_query_terms(query)
     hits: list[SearchHit] = []
 
-    for article in CATALOG["articles"]:
+    for article in allowed_articles():
         journal = JOURNALS[article["journal_id"]]
         institution = INSTITUTIONS[journal["institution_id"]]
         if institution_type != "all" and institution["type"] != institution_type:
@@ -378,7 +400,7 @@ def search_articles(query: str, institution_type: str = "all", subject: str = "a
 
 
 def latest_articles(limit: int = 12) -> list[dict[str, Any]]:
-    indexed = list(enumerate(CATALOG["articles"]))
+    indexed = list(enumerate(allowed_articles()))
     indexed.sort(key=lambda item: (int(item[1].get("year") or 0), item[0]), reverse=True)
     return [enrich_article(article, score=0, reasons=["latest indexed record"]) for _, article in indexed[:limit]]
 
@@ -857,9 +879,10 @@ class AppHandler(SimpleHTTPRequestHandler):
                 {
                     "metadata": CATALOG["metadata"],
                     "institutions": CATALOG["institutions"],
-                    "journals": CATALOG["journals"],
+                    "journals": [journal for journal in CATALOG["journals"] if allowed_journal(journal)],
                     "source_count": len(SOURCE_LINKS),
-                    "article_count": len(CATALOG["articles"]),
+                    "article_count": len(allowed_articles()),
+                    "journal_count": unique_allowed_journal_count(),
                     "subjects": catalog_subjects(),
                 }
             )
@@ -869,9 +892,9 @@ class AppHandler(SimpleHTTPRequestHandler):
             self.send_json(
                 {
                     "institution_count": len(CATALOG["institutions"]),
-                    "journal_count": len(CATALOG["journals"]),
+                    "journal_count": unique_allowed_journal_count(),
                     "source_count": len(SOURCE_LINKS),
-                    "article_count": len(CATALOG["articles"]),
+                    "article_count": len(allowed_articles()),
                 }
             )
             return
@@ -897,7 +920,7 @@ class AppHandler(SimpleHTTPRequestHandler):
             return
 
         if parsed.path == "/api/health":
-            self.send_json({"ok": True, "catalog_records": len(CATALOG["articles"]), "source_links": len(SOURCE_LINKS)})
+            self.send_json({"ok": True, "catalog_records": len(allowed_articles()), "source_links": len(SOURCE_LINKS)})
             return
 
         super().do_GET()
@@ -960,8 +983,8 @@ class AppHandler(SimpleHTTPRequestHandler):
                 self.send_json(
                     {
                         "imported": imported,
-                        "article_count": len(CATALOG["articles"]),
-                        "journal_count": len(CATALOG["journals"]),
+                        "article_count": len(allowed_articles()),
+                        "journal_count": unique_allowed_journal_count(),
                         "source_count": len(SOURCE_LINKS),
                         "notes": notes[-20:],
                     }

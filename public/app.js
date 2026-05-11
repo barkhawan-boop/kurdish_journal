@@ -201,8 +201,8 @@ async function loadCatalog() {
 
   updateStats({
     institution_count: state.catalog.institutions.length,
-    journal_count: state.catalog.journals.length,
-    source_count: state.catalog.source_count,
+    journal_count: state.catalog.journal_count || state.catalog.journals.length,
+    source_count: 0,
     article_count: state.catalog.article_count
   });
 
@@ -229,7 +229,7 @@ async function loadStats() {
 
 function updateStats(stats) {
   const institutions = Number(stats.institution_count || 0);
-  const journals = Number(stats.journal_count || 0) + Number(stats.source_count || 0);
+  const journals = Number(stats.journal_count || 0);
   const articles = Number(stats.article_count || 0);
   $("#institution-count").textContent = institutions.toLocaleString();
   $("#journal-count").textContent = journals.toLocaleString();
