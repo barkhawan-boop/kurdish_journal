@@ -155,6 +155,7 @@ def institution_id_for_source(catalog: dict[str, Any], source: dict[str, Any]) -
         "kurdistanregionuniversity": "sulaimani",
         "kurdistanregionresearchcommunity": "sulaimani",
         "mesopotamianacademicpress": "sulaimani",
+        "universityofcharmo": "charmo",
     }
     return aliases.get(institution_key, "sulaimani")
 
