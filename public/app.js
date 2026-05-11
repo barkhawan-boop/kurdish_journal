@@ -195,6 +195,7 @@ async function loadCatalog() {
     institutions: Array.isArray(catalog.institutions) ? catalog.institutions : [],
     journals: Array.isArray(catalog.journals) ? catalog.journals : [],
     subjects: Array.isArray(catalog.subjects) ? catalog.subjects : [],
+    journal_count: Number(catalog.journal_count || 0),
     source_count: Number(catalog.source_count || 0),
     article_count: Number(catalog.article_count || 0)
   };
