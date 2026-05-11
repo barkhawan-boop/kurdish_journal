@@ -3,7 +3,7 @@ name: Refresh journal catalog
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 */6 * * *"
+    - cron: "0 */2 * * *"
 
 permissions:
   contents: write
@@ -21,8 +21,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Harvest latest northern journal articles
-        run: python harvest_ojs.py --max-records-per-source 200
+      - name: Harvest latest approved Kurdistan journal articles
+        run: python harvest_ojs.py --max-records-per-source 500
 
       - name: Commit catalog changes
         run: |
