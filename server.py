@@ -199,7 +199,13 @@ def allowed_articles() -> list[dict[str, Any]]:
 
 
 def unique_allowed_journal_count() -> int:
-    titles = {" ".join(journal.get("title", "").lower().split()) for journal in CATALOG["journals"] if allowed_journal(journal)}
+    source_titles = {" ".join(source.get("title", "").lower().split()) for source in SOURCE_LINKS}
+    indexed_titles = {
+        " ".join(journal.get("title", "").lower().split())
+        for journal in CATALOG["journals"]
+        if bool({"scopus", "doaj"} & {item.lower() for item in journal.get("indexing", [])})
+    }
+    titles = source_titles | indexed_titles
     return len({title for title in titles if title})
 
 
