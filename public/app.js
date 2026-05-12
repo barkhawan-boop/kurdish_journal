@@ -50,8 +50,8 @@ const translations = {
   ku: {
     searchTitle: "گەڕان لە گۆڤارە زانستییەکانی هەرێمی کوردستان",
     searchHint: "بە بابەت، نووسەر، گۆڤار، زانکۆ، شار یان وشەی سەرەکی بگەڕێ.",
-    sourceNotePrefix: "Only the journals mentioned in the official document from the Ministry of Higher Education are searched here.",
-    sourceNoteLink: "Click here to see the recognized list.",
+    sourceNotePrefix: "تەنها ئەو گۆڤارانە لێرەدا دەگەڕدرێن کە لە بەڵگەنامەی فەرمی وەزارەتی خوێندنی باڵا و توێژینەوەی زانستی ناویان هاتووە.",
+    sourceNoteLink: "بۆ بینینی لیستی دانپێدانراوەکان کلیک بکە.",
     keyword: "وشەی سەرەکی",
     searchButton: "گەڕان",
     institutionType: "جۆری دامەزراوە",
@@ -98,8 +98,8 @@ const translations = {
   ar: {
     searchTitle: "البحث في مجلات إقليم كردستان",
     searchHint: "ابحث حسب الموضوع أو المؤلف أو المجلة أو الجامعة أو المدينة أو الكلمة المفتاحية.",
-    sourceNotePrefix: "Only the journals mentioned in the official document from the Ministry of Higher Education are searched here.",
-    sourceNoteLink: "Click here to see the recognized list.",
+    sourceNotePrefix: "يتم البحث هنا فقط في المجلات المذكورة في الوثيقة الرسمية الصادرة عن وزارة التعليم العالي والبحث العلمي.",
+    sourceNoteLink: "انقر هنا لعرض القائمة المعتمدة.",
     keyword: "الكلمة المفتاحية",
     searchButton: "بحث",
     institutionType: "نوع المؤسسة",
