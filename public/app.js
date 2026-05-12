@@ -2,6 +2,8 @@ const translations = {
   en: {
     searchTitle: "Search Kurdistan academic journals",
     searchHint: "Find articles and official journal sources by topic, author, journal, university, city, or keyword.",
+    sourceNotePrefix: "Only the journals mentioned in the official document from the Ministry of Higher Education are searched here.",
+    sourceNoteLink: "Click here to see the recognized list.",
     keyword: "Keyword",
     searchButton: "Search",
     institutionType: "Institution type",
@@ -48,6 +50,8 @@ const translations = {
   ku: {
     searchTitle: "گەڕان لە گۆڤارە زانستییەکانی هەرێمی کوردستان",
     searchHint: "بە بابەت، نووسەر، گۆڤار، زانکۆ، شار یان وشەی سەرەکی بگەڕێ.",
+    sourceNotePrefix: "Only the journals mentioned in the official document from the Ministry of Higher Education are searched here.",
+    sourceNoteLink: "Click here to see the recognized list.",
     keyword: "وشەی سەرەکی",
     searchButton: "گەڕان",
     institutionType: "جۆری دامەزراوە",
@@ -94,6 +98,8 @@ const translations = {
   ar: {
     searchTitle: "البحث في مجلات إقليم كردستان",
     searchHint: "ابحث حسب الموضوع أو المؤلف أو المجلة أو الجامعة أو المدينة أو الكلمة المفتاحية.",
+    sourceNotePrefix: "Only the journals mentioned in the official document from the Ministry of Higher Education are searched here.",
+    sourceNoteLink: "Click here to see the recognized list.",
     keyword: "الكلمة المفتاحية",
     searchButton: "بحث",
     institutionType: "نوع المؤسسة",

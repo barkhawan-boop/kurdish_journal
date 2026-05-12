@@ -132,6 +132,28 @@ main {
   margin-bottom: 0;
 }
 
+.search-copy .source-note {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-left: 4px solid var(--brand);
+  border-radius: 6px;
+  background: var(--soft);
+  color: var(--ink);
+  font-size: 15px;
+}
+
+body.rtl .search-copy .source-note {
+  border-left: 0;
+  border-right: 4px solid var(--brand);
+}
+
+.source-note a {
+  color: var(--brand-dark);
+  font-weight: 800;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
 .search-form label,
 .filters span {
   display: block;
