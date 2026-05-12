@@ -201,6 +201,11 @@ def unique_allowed_journal_count() -> int:
     return len({title for title in source_titles if title})
 
 
+def unique_allowed_institution_count() -> int:
+    source_institutions = {" ".join(source.get("institution", "").lower().split()) for source in SOURCE_LINKS}
+    return len({institution for institution in source_institutions if institution})
+
+
 def tokens(text: str) -> list[str]:
     raw_tokens = [match.group(0).lower() for match in SCRIPT_RE.finditer(text)]
     return [token for token in raw_tokens if token not in STOP_WORDS and len(token) > 1]
@@ -880,6 +885,7 @@ class AppHandler(SimpleHTTPRequestHandler):
                     "journals": [journal for journal in CATALOG["journals"] if allowed_journal(journal)],
                     "source_count": len(SOURCE_LINKS),
                     "article_count": len(allowed_articles()),
+                    "institution_count": unique_allowed_institution_count(),
                     "journal_count": unique_allowed_journal_count(),
                     "subjects": catalog_subjects(),
                 }
@@ -889,7 +895,7 @@ class AppHandler(SimpleHTTPRequestHandler):
         if parsed.path == "/api/stats":
             self.send_json(
                 {
-                    "institution_count": len(CATALOG["institutions"]),
+                    "institution_count": unique_allowed_institution_count(),
                     "journal_count": unique_allowed_journal_count(),
                     "source_count": len(SOURCE_LINKS),
                     "article_count": len(allowed_articles()),
@@ -982,6 +988,7 @@ class AppHandler(SimpleHTTPRequestHandler):
                     {
                         "imported": imported,
                         "article_count": len(allowed_articles()),
+                        "institution_count": unique_allowed_institution_count(),
                         "journal_count": unique_allowed_journal_count(),
                         "source_count": len(SOURCE_LINKS),
                         "notes": notes[-20:],

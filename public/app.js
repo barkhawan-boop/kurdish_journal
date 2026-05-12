@@ -201,13 +201,14 @@ async function loadCatalog() {
     institutions: Array.isArray(catalog.institutions) ? catalog.institutions : [],
     journals: Array.isArray(catalog.journals) ? catalog.journals : [],
     subjects: Array.isArray(catalog.subjects) ? catalog.subjects : [],
+    institution_count: Number(catalog.institution_count || 0),
     journal_count: Number(catalog.journal_count || 0),
     source_count: Number(catalog.source_count || 0),
     article_count: Number(catalog.article_count || 0)
   };
 
   updateStats({
-    institution_count: state.catalog.institutions.length,
+    institution_count: state.catalog.institution_count || state.catalog.institutions.length,
     journal_count: state.catalog.journal_count || state.catalog.journals.length,
     source_count: 0,
     article_count: state.catalog.article_count
