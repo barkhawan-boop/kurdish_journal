@@ -189,9 +189,7 @@ def journal_source_id(journal_id: str) -> str:
 
 def allowed_journal(journal: dict[str, Any]) -> bool:
     source_id = journal_source_id(journal.get("id", ""))
-    if source_id in SOURCE_IDS:
-        return True
-    return bool({"scopus", "doaj"} & {item.lower() for item in journal.get("indexing", [])})
+    return source_id in SOURCE_IDS
 
 
 def allowed_articles() -> list[dict[str, Any]]:
@@ -200,13 +198,7 @@ def allowed_articles() -> list[dict[str, Any]]:
 
 def unique_allowed_journal_count() -> int:
     source_titles = {" ".join(source.get("title", "").lower().split()) for source in SOURCE_LINKS}
-    indexed_titles = {
-        " ".join(journal.get("title", "").lower().split())
-        for journal in CATALOG["journals"]
-        if bool({"scopus", "doaj"} & {item.lower() for item in journal.get("indexing", [])})
-    }
-    titles = source_titles | indexed_titles
-    return len({title for title in titles if title})
+    return len({title for title in source_titles if title})
 
 
 def tokens(text: str) -> list[str]:
