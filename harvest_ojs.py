@@ -18,6 +18,7 @@ SOURCE_LINKS_PATH = BASE_DIR / "data" / "source_links.json"
 
 OAI_NS = {"oai": "http://www.openarchives.org/OAI/2.0/", "dc": "http://purl.org/dc/elements/1.1/"}
 USER_AGENT = "Mozilla/5.0 (compatible; KurdishJournalSearch/1.0; OAI metadata harvester)"
+DOI_RE = re.compile(r"(10\.\d{4,9}/[^\s\"<>]+)", re.IGNORECASE)
 
 
 def slug(value: str) -> str:
@@ -96,6 +97,14 @@ def text_values(record: ET.Element, name: str) -> list[str]:
     ]
 
 
+def normalize_doi(value: str) -> str:
+    match = DOI_RE.search(value or "")
+    if not match:
+        return ""
+    doi = match.group(1).strip().rstrip(".,);]")
+    return doi.lower()
+
+
 def record_to_article(record: ET.Element, source: dict[str, Any], journal_id: str) -> dict[str, Any] | None:
     title_values = text_values(record, "title")
     if not title_values:
@@ -112,6 +121,8 @@ def record_to_article(record: ET.Element, source: dict[str, Any], journal_id: st
     subjects = text_values(record, "subject")
     description = " ".join(text_values(record, "description"))
 
+    doi = next((normalize_doi(value) for value in identifiers if normalize_doi(value)), "")
+
     return {
         "id": article_id,
         "title": title,
@@ -120,7 +131,7 @@ def record_to_article(record: ET.Element, source: dict[str, Any], journal_id: st
         "authors": text_values(record, "creator") or ["Unknown"],
         "year": int(year_match.group(0)) if year_match else "",
         "journal_id": journal_id,
-        "doi": next((value for value in identifiers if "doi.org/" in value.lower()), ""),
+        "doi": doi,
         "pdf_url": pdf_url,
         "url": url or source.get("url", ""),
         "keywords": subjects[:12] + [source.get("institution", ""), source.get("title", "")],

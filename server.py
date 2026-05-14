@@ -23,6 +23,7 @@ DATA_PATH = BASE_DIR / "data" / "catalog.json"
 SOURCE_LINKS_PATH = BASE_DIR / "data" / "source_links.json"
 
 SCRIPT_RE = re.compile(r"[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]+|[A-Za-z0-9]+")
+DOI_RE = re.compile(r"(10\.\d{4,9}/[^\s\"<>]+)", re.IGNORECASE)
 STOP_WORDS = {
     "the",
     "and",
@@ -266,7 +267,7 @@ def citation(article: dict[str, Any], journal: dict[str, Any], style: str = "apa
     year = article.get("year", "n.d.")
     title = article.get("title", "Untitled")
     journal_title = journal.get("title", "Unknown journal")
-    doi = article.get("doi") or ""
+    doi = normalize_doi(article.get("doi") or "")
     link = article.get("url") or article.get("pdf_url") or ""
 
     if style == "mla":
@@ -287,16 +288,71 @@ def citation(article: dict[str, Any], journal: dict[str, Any], style: str = "apa
             f"  url = {{{link}}}\n"
             f"}}"
         )
-    tail = f" https://doi.org/{doi}" if doi else (f" {link}" if link else "")
+    tail = f" {doi_url(doi)}" if doi else (f" {link}" if link else "")
     return f"{author_text}. ({year}). {title}. {journal_title}.{tail}"
+
+
+def normalize_doi(value: str) -> str:
+    match = DOI_RE.search(value or "")
+    if not match:
+        return ""
+    return match.group(1).strip().rstrip(".,);]").lower()
+
+
+def doi_url(doi: str) -> str:
+    clean = normalize_doi(doi)
+    return f"https://doi.org/{clean}" if clean else ""
 
 
 def pdf_search_url(article: dict[str, Any], journal: dict[str, Any]) -> str:
     title = article.get("title", "")
     journal_title = journal.get("title", "")
-    doi = article.get("doi", "")
+    doi = normalize_doi(article.get("doi", ""))
     query = " ".join(part for part in [title, journal_title, doi, "PDF"] if part)
     return f"https://www.google.com/search?q={quote_plus(query)}"
+
+
+def crossref_lookup_doi(article: dict[str, Any]) -> dict[str, Any]:
+    title = article.get("title", "")
+    journal = article.get("journal", {}).get("title", "")
+    year = str(article.get("year") or "")
+    authors = " ".join(article.get("authors", [])[:3])
+    query = " ".join(part for part in [title, journal, year, authors] if part)
+    if not query:
+        return {"doi": "", "message": "No title or metadata available for DOI lookup."}
+
+    url = (
+        "https://api.crossref.org/works"
+        f"?query.bibliographic={quote_plus(query)}"
+        "&rows=1&select=DOI,title,container-title,published-print,published-online,score,URL"
+    )
+    request = Request(
+        url,
+        headers={
+            "User-Agent": "KurdistanAcademicJournals/1.0 (mailto:no-reply@example.com)",
+            "Accept": "application/json",
+        },
+    )
+    with urlopen(request, timeout=15) as response:
+        payload = json.loads(response.read().decode("utf-8"))
+
+    items = payload.get("message", {}).get("items", [])
+    if not items:
+        return {"doi": "", "message": "No DOI match found in Crossref."}
+
+    item = items[0]
+    doi = normalize_doi(item.get("DOI", ""))
+    if not doi:
+        return {"doi": "", "message": "Crossref returned a record without a DOI."}
+
+    return {
+        "doi": doi,
+        "doi_url": doi_url(doi),
+        "score": item.get("score"),
+        "matched_title": " ".join(item.get("title", [])[:1]),
+        "matched_journal": " ".join(item.get("container-title", [])[:1]),
+        "message": "DOI found via Crossref. Please verify the match before citation.",
+    }
 
 
 def article_summary(article: dict[str, Any], journal: dict[str, Any], institution: dict[str, Any]) -> str:
@@ -333,6 +389,8 @@ def enrich_article(article: dict[str, Any], score: int = 0, reasons: list[str] |
         "bibtex": citation(article, journal, "bibtex"),
     }
     result["pdf_search_url"] = pdf_search_url(article, journal)
+    result["doi"] = normalize_doi(result.get("doi", ""))
+    result["doi_url"] = doi_url(result.get("doi", ""))
     return result
 
 
@@ -957,6 +1015,36 @@ class AppHandler(SimpleHTTPRequestHandler):
             length = int(self.headers.get("Content-Length", "0"))
             payload = json.loads(self.rfile.read(length).decode("utf-8") or "{}")
             self.send_json({"summary": metadata_summary(payload)})
+            return
+
+        if parsed.path == "/api/doi-lookup":
+            length = int(self.headers.get("Content-Length", "0"))
+            payload = json.loads(self.rfile.read(length).decode("utf-8") or "{}")
+            existing = normalize_doi(payload.get("doi", ""))
+            if existing:
+                lookup = {
+                    "doi": existing,
+                    "doi_url": doi_url(existing),
+                    "message": "This record already has a DOI.",
+                }
+            else:
+                try:
+                    lookup = crossref_lookup_doi(payload)
+                except Exception as exc:
+                    lookup = {"doi": "", "doi_url": "", "message": f"DOI lookup failed: {exc}"}
+
+            doi = lookup.get("doi", "")
+            article = dict(payload)
+            if doi:
+                article["doi"] = doi
+            journal = payload.get("journal", {})
+            lookup["citations"] = {
+                "apa": citation(article, journal, "apa"),
+                "mla": citation(article, journal, "mla"),
+                "chicago": citation(article, journal, "chicago"),
+                "bibtex": citation(article, journal, "bibtex"),
+            }
+            self.send_json(lookup)
             return
 
         if parsed.path == "/api/export-summary-pdf":

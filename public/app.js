@@ -45,7 +45,11 @@ const translations = {
     score: "score",
     sourceLink: "Source link",
     openSource: "Open source",
-    linkNeedsVerification: "Link needs verification"
+    linkNeedsVerification: "Link needs verification",
+    doiNotStored: "Not stored",
+    findDoi: "Find DOI",
+    doiLookupRunning: "Checking Crossref...",
+    doiLookupFailed: "No DOI found"
   },
   ku: {
     searchTitle: "گەڕان لە گۆڤارە زانستییەکانی هەرێمی کوردستان",
@@ -93,7 +97,11 @@ const translations = {
     score: "پلە",
     sourceLink: "لینکی سەرچاوە",
     openSource: "کردنەوەی سەرچاوە",
-    linkNeedsVerification: "لینک پێویستی بە پشتڕاستکردنەوە هەیە"
+    linkNeedsVerification: "لینک پێویستی بە پشتڕاستکردنەوە هەیە",
+    doiNotStored: "DOI تۆمار نەکراوە",
+    findDoi: "دۆزینەوەی DOI",
+    doiLookupRunning: "پشکنینی Crossref...",
+    doiLookupFailed: "DOI نەدۆزرایەوە"
   },
   ar: {
     searchTitle: "البحث في مجلات إقليم كردستان",
@@ -141,7 +149,11 @@ const translations = {
     score: "درجة",
     sourceLink: "رابط المصدر",
     openSource: "فتح المصدر",
-    linkNeedsVerification: "الرابط يحتاج إلى تحقق"
+    linkNeedsVerification: "الرابط يحتاج إلى تحقق",
+    doiNotStored: "لا يوجد DOI محفوظ",
+    findDoi: "البحث عن DOI",
+    doiLookupRunning: "جاري فحص Crossref...",
+    doiLookupFailed: "لم يتم العثور على DOI"
   }
 };
 
@@ -348,6 +360,7 @@ function renderResults() {
     node.querySelector(".citation").textContent = citation;
     node.querySelector(".copy-citation").textContent = t("copyCitation");
     node.querySelector(".copy-summary").textContent = t("summarizePdf");
+    renderDoiStatus(node.querySelector(".doi-status"), article);
 
     const tags = node.querySelector(".tags");
     article.keywords.slice(0, 8).forEach((keyword) => {
@@ -378,6 +391,53 @@ function renderResults() {
 
     resultsEl.appendChild(card);
   });
+}
+
+function renderDoiStatus(container, article) {
+  container.innerHTML = "";
+  if (article.doi_url) {
+    const link = document.createElement("a");
+    link.href = article.doi_url;
+    link.target = "_blank";
+    link.rel = "noreferrer";
+    link.textContent = article.doi || article.doi_url;
+    container.appendChild(link);
+    return;
+  }
+
+  const status = document.createElement("span");
+  status.className = "doi-missing";
+  status.textContent = t("doiNotStored");
+  const button = document.createElement("button");
+  button.className = "doi-lookup";
+  button.type = "button";
+  button.textContent = t("findDoi");
+  button.addEventListener("click", () => lookupDoi(article, container, button));
+  container.append(status, button);
+}
+
+async function lookupDoi(article, container, button) {
+  button.disabled = true;
+  button.textContent = t("doiLookupRunning");
+  try {
+    const response = await fetch("/api/doi-lookup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(article)
+    });
+    const payload = await response.json();
+    if (!payload.doi) {
+      container.textContent = payload.message || t("doiLookupFailed");
+      return;
+    }
+    article.doi = payload.doi;
+    article.doi_url = payload.doi_url;
+    if (payload.citations) article.citations = payload.citations;
+    renderResults();
+  } catch (error) {
+    console.error(error);
+    container.textContent = t("doiLookupFailed");
+  }
 }
 
 function preparePdfSummary(article) {

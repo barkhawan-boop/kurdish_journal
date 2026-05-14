@@ -449,6 +449,33 @@ textarea:focus {
   word-break: normal;
 }
 
+.doi-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.doi-status a {
+  color: var(--brand-dark);
+  font-weight: 700;
+}
+
+.doi-lookup {
+  min-height: 30px;
+  border: 1px solid var(--brand);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--brand-dark);
+  padding: 4px 8px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.doi-missing {
+  color: var(--muted);
+}
+
 .citation {
   grid-column: 1 / -1;
   max-width: 100%;
