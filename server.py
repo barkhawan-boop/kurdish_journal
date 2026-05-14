@@ -226,6 +226,7 @@ def searchable_text(article: dict[str, Any], journal: dict[str, Any], institutio
         article.get("title_ar", ""),
         article.get("abstract", ""),
         article.get("summary", ""),
+        article.get("full_text", ""),
         article.get("language", ""),
         journal.get("title", ""),
         journal.get("issn", ""),
@@ -377,6 +378,7 @@ def enrich_article(article: dict[str, Any], score: int = 0, reasons: list[str] |
     journal = JOURNALS.get(article["journal_id"], {})
     institution = INSTITUTIONS.get(journal.get("institution_id", ""), {})
     result = dict(article)
+    full_text = result.pop("full_text", "")
     result["score"] = score
     result["reasons"] = reasons or []
     result["journal"] = journal
@@ -391,6 +393,8 @@ def enrich_article(article: dict[str, Any], score: int = 0, reasons: list[str] |
     result["pdf_search_url"] = pdf_search_url(article, journal)
     result["doi"] = normalize_doi(result.get("doi", ""))
     result["doi_url"] = doi_url(result.get("doi", ""))
+    result["full_text_indexed"] = bool(full_text)
+    result["full_text_source"] = article.get("full_text_source", "")
     return result
 
 
@@ -464,6 +468,13 @@ def latest_articles(limit: int = 12) -> list[dict[str, Any]]:
     indexed = list(enumerate(allowed_articles()))
     indexed.sort(key=lambda item: (int(item[1].get("year") or 0), item[0]), reverse=True)
     return [enrich_article(article, score=0, reasons=["latest indexed record"]) for _, article in indexed[:limit]]
+
+
+def catalog_article_by_id(article_id: str) -> dict[str, Any] | None:
+    for article in CATALOG["articles"]:
+        if article.get("id") == article_id:
+            return article
+    return None
 
 
 def enrich_source(source: dict[str, Any], score: int = 0, reasons: list[str] | None = None) -> dict[str, Any]:
@@ -732,6 +743,10 @@ def readable_html_text(markup: str) -> str:
 
 
 def article_text_for_summary(article: dict[str, Any]) -> tuple[str, str]:
+    indexed_text = article.get("full_text") or ""
+    if len(tokens(indexed_text)) > 80:
+        return indexed_text, article.get("full_text_source") or "indexed full text"
+
     pdf_url = article.get("pdf_url") or ""
     article_url = article.get("url") or ""
     for url in [pdf_url, article_url]:
@@ -1014,6 +1029,16 @@ class AppHandler(SimpleHTTPRequestHandler):
         if parsed.path == "/api/summarize-article":
             length = int(self.headers.get("Content-Length", "0"))
             payload = json.loads(self.rfile.read(length).decode("utf-8") or "{}")
+            stored = catalog_article_by_id(str(payload.get("id", "")))
+            if stored:
+                merged = dict(payload)
+                merged.update(
+                    {
+                        "full_text": stored.get("full_text", ""),
+                        "full_text_source": stored.get("full_text_source", ""),
+                    }
+                )
+                payload = merged
             self.send_json({"summary": metadata_summary(payload)})
             return
 

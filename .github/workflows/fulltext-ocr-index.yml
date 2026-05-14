@@ -1,0 +1,45 @@
+name: OCR full-text index
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 1 * * 0"
+
+permissions:
+  contents: write
+
+jobs:
+  ocr-index:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install OCR system packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils tesseract-ocr tesseract-ocr-eng tesseract-ocr-ara
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Build OCR full-text index
+        run: python ocr_index.py --max-articles 80 --max-pages 20 --max-chars 20000 --languages eng+ara
+
+      - name: Commit full-text index changes
+        run: |
+          if git diff --quiet data/catalog.json; then
+            echo "No new full-text records found."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/catalog.json
+          git commit -m "Refresh OCR full-text index"
+          git push
