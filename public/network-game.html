@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Network Design Game</title>
+    <link rel="stylesheet" href="/network-game.css">
+  </head>
+  <body>
+    <header class="game-topbar">
+      <div>
+        <p class="eyebrow">Shapley Cost Sharing</p>
+        <h1>Network Design Game</h1>
+      </div>
+      <a class="home-link" href="/">Journal search</a>
+    </header>
+
+    <main class="game-shell">
+      <section class="control-panel" aria-label="Game controls">
+        <label>
+          Players
+          <input id="player-count" type="number" min="2" max="12" value="4">
+        </label>
+        <label>
+          Shared edge cost
+          <input id="shared-cost" type="number" min="0.1" max="5" step="0.05" value="1.05">
+        </label>
+        <div class="button-row">
+          <button id="apply-game" type="button">New game</button>
+          <button id="best-response" type="button">Best response</button>
+          <button id="run-stable" type="button">Run to stable</button>
+          <button id="set-optimal" type="button">Set optimum</button>
+        </div>
+      </section>
+
+      <section class="board-panel" aria-label="Network board">
+        <svg id="network-board" role="img" aria-label="Network graph"></svg>
+      </section>
+
+      <section class="score-panel" aria-label="Scores">
+        <article>
+          <span>Social cost</span>
+          <strong id="social-cost">0</strong>
+        </article>
+        <article>
+          <span>Optimum</span>
+          <strong id="optimal-cost">0</strong>
+        </article>
+        <article>
+          <span>Ratio</span>
+          <strong id="price-ratio">1.00</strong>
+        </article>
+        <article>
+          <span>Stability</span>
+          <strong id="stability">Stable</strong>
+        </article>
+      </section>
+
+      <section class="players-panel" aria-label="Players">
+        <div class="panel-heading">
+          <h2>Players</h2>
+          <p id="move-note">Choose each player route.</p>
+        </div>
+        <div id="player-list" class="player-list"></div>
+      </section>
+
+      <section class="ledger-panel" aria-label="Cost allocation">
+        <div class="panel-heading">
+          <h2>Cost allocation</h2>
+          <p>Each edge cost is split equally among players using that edge.</p>
+        </div>
+        <div class="ledger-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Edge</th>
+                <th>Cost</th>
+                <th>Users</th>
+                <th>Share per user</th>
+              </tr>
+            </thead>
+            <tbody id="edge-ledger"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer class="game-footer">
+      Inspired by fair cost allocation in network design games:
+      <a href="https://www.cs.cornell.edu/home/kleinber/focs04-game.pdf" target="_blank" rel="noreferrer">paper</a>.
+    </footer>
+
+    <script src="/network-game.js"></script>
+  </body>
+</html>

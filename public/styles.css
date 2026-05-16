@@ -83,6 +83,18 @@ h2 {
   flex-wrap: wrap;
 }
 
+.game-nav-link {
+  min-height: 36px;
+  border: 1px solid var(--brand);
+  border-radius: 6px;
+  color: var(--brand-dark);
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 800;
+  text-decoration: none;
+}
+
 .language-switcher button,
 .actions button,
 .tool-actions button,
